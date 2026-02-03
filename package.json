@@ -1,0 +1,40 @@
+{
+  "name": "lam-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@fontsource/roboto": "^5.2.9",
+    "@mui/icons-material": "^7.3.7",
+    "@mui/material": "^7.3.7",
+    "@xyflow/react": "^12.10.0",
+    "react": "19.2.x",
+    "react-dom": "19.2.x",
+    "react-router": "7.13.x",
+    "sass": "1.97.x",
+    "zustand": "^5.0.11"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.x",
+    "@types/node": "24.10.x",
+    "@types/react": "19.2.x",
+    "@types/react-dom": "19.2.x",
+    "@vitejs/plugin-react": "5.1.x",
+    "eslint": "9.39.x",
+    "eslint-plugin-react-hooks": "7.0.x",
+    "eslint-plugin-react-refresh": "0.4.x",
+    "globals": "16.5.x",
+    "prettier": "^3.8.1",
+    "typescript": "5.9.x",
+    "typescript-eslint": "8.46.x",
+    "vite": "7.2.x"
+  }
+}
