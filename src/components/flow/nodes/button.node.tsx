@@ -1,8 +1,9 @@
 import { Button } from '@mui/material';
 import { Handle, Position } from '@xyflow/react';
-import { Link, useNavigate } from 'react-router';
+import { memo } from 'react';
+import { useNavigate } from 'react-router';
 
-export default function ButtonNode({ data: { label, path } }: any) {
+function ButtonNode({ data: { label, path } }: any) {
   const navigate = useNavigate();
 
   return (
@@ -15,3 +16,5 @@ export default function ButtonNode({ data: { label, path } }: any) {
     </>
   );
 }
+
+export default memo(ButtonNode);

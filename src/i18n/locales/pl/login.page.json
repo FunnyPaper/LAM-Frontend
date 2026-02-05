@@ -1,0 +1,19 @@
+{
+  "header": "Logowanie",
+  "form": {
+    "fields": {
+      "email": "Email",
+      "password": "Hasło",
+      "login": "Zaloguj"
+    },
+    "validation": {
+      "required": "{{field}} jest wymagane",
+      "minLength": "Minimalnie {{length}} znaków",
+      "pattern": {
+        "email": "Niepoprawny adres email"
+      },
+      "credentials": "Nieprawidłowe dane logowania"
+    },
+    "notSigned": "Zarejestruj"
+  }
+}

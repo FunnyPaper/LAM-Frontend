@@ -17,27 +17,41 @@ import {
 import { useCallback, useState } from 'react';
 import '@xyflow/react/dist/style.css';
 import { nodeTypes } from '../../components/flow/nodes/node.type';
+import { useTranslation } from 'react-i18next';
 
 const initialNodes: Node[] = [
   {
     id: 'n1',
     type: 'button',
-    position: { x: 0, y: 0 },
-    data: { label: 'Landing', path: '/' },
+    position: { x: -100, y: 0 },
+    data: { label: 'Profile', path: '/profile' },
   },
   {
     id: 'n2',
     type: 'button',
-    position: { x: 0, y: 100 },
-    data: { label: 'Hello', path: '/hello' },
+    position: { x: 100, y: 0 },
+    data: { label: 'Envs', path: '/envs' },
+  },
+  {
+    id: 'n4',
+    type: 'button',
+    position: { x: -100, y: 100 },
+    data: { label: 'Runs', path: '/runs' },
+  },
+  {
+    id: 'n5',
+    type: 'button',
+    position: { x: 100, y: 100 },
+    data: { label: 'Settings', path: '/settings' },
   },
 ];
 
-const initialEdges: Edge[] = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
+const initialEdges: Edge[] = [];
 
 const proOptions: ProOptions = { hideAttribution: true };
 
-export default function FlowPage() {
+export default function ScriptsPage() {
+  const { t } = useTranslation('scripts');
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
 

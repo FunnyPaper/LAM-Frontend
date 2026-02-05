@@ -1,0 +1,19 @@
+{
+  "header": "Register",
+  "form": {
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "login": "Register"
+    },
+    "validation": {
+      "required": "{{field}} is required",
+      "minLength": "Minimum {{length}} characters",
+      "pattern": {
+        "email": "Invalid email address"
+      },
+      "credentials": "Invalid credentials"
+    },
+    "signed": "Login instead"
+  }
+}

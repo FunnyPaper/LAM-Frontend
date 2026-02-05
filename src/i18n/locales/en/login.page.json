@@ -1,0 +1,19 @@
+{
+  "header": "Login",
+  "form": {
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "login": "Login"
+    },
+    "validation": {
+      "required": "{{field}} is required",
+      "minLength": "Minimum {{length}} characters",
+      "pattern": {
+        "email": "Invalid email address"
+      },
+      "credentials": "Invalid credentials"
+    },
+    "notSigned": "Sign instead"
+  }
+}
