@@ -1,3 +1,15 @@
 {
-  "not-found": "Page not found"
+  "not-found": "Page not found",
+  "components": {
+    "dropzone": {
+      "dragNDrop": "Drag & drop a JSON file here",
+      "clickToSelect": "or click to select",
+      "preview": "Preview",
+      "remove": "Remove",
+      "errors": {
+        "onlyJson": "Only JSON files allowed",
+        "invalidJson": "Invalid JSON file"
+      }
+    }
+  }
 }

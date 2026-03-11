@@ -12,7 +12,12 @@
       "pattern": {
         "email": "Niepoprawny adres email"
       },
-      "credentials": "Nieprawidłowe dane rejestrowania"
+      "credentials": "Nieprawidłowe dane rejestrowania",
+      "strongPassword": "Hasło jest za słabe"
+    },
+    "tooltip": {
+      "showPassword": "Pokaż hasło",
+      "hidePassword": "Ukryj hasło"
     },
     "signed": "Zaloguj"
   }

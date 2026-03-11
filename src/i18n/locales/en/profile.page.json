@@ -1,3 +1,21 @@
 {
-  "header": "Profile"
+  "header": "Profile",
+  "form": {
+    "fields": {
+      "email": "Email",
+      "update": "Update",
+      "reset": "Reset"
+    },
+    "validation": {
+      "required": "{{field}} is required",
+      "minLength": "Minimum {{length}} characters",
+      "pattern": {
+        "email": "Invalid email address"
+      },
+      "credentials": "Invalid credentials"
+    },
+    "tooltip": {
+      "restore": "Restore default value"
+    }
+  }
 }

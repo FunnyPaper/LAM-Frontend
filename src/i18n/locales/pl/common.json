@@ -1,3 +1,15 @@
 {
-  "not-found": "Strony nie znaleziono"
+  "not-found": "Strony nie znaleziono",
+  "components": {
+    "dropzone": {
+      "dragNDrop": "Przeciągnij i upuść plik JSON",
+      "clickToSelect": "lub kliknij aby wybrać",
+      "preview": "Podejrzyj",
+      "remove": "Usuń",
+      "errors": {
+        "onlyJson": "Tylko pliki JSON są dozwolone",
+        "invalidJson": "Niepoprawny plik JSON"
+      }
+    }
+  }
 }

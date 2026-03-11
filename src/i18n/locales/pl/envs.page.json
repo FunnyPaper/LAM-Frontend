@@ -1,3 +1,30 @@
 {
-  "header": "Zmienne"
+  "header": "Środowiska",
+  "drawer": {
+    "remove": "Usuń"
+  },
+  "createModal": {
+    "title": "Stwórz środowisko"
+  },
+  "form": {
+    "section": {
+      "details": "Detale",
+      "variables": "Zmienne"
+    },
+    "fields": {
+      "name": "Nazwa",
+      "description": "Opis",
+      "key": "Klucz",
+      "value": "Wartość",
+      "addField": "Dodaj klucz",
+      "removeAll": "Usuń wszystkie",
+      "save": "Zapisz"
+    },
+    "validation": {
+      "required": "Pole {{key}} jest wymagane",
+      "unique": "Pole {{key}} musi być unikatowe",
+      "minLength": "Minimalnie {{length}} znaków",
+      "maxLength": "Maksymalnie {{length}} znaków"
+    }
+  }
 }

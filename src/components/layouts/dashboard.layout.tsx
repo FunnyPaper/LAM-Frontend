@@ -189,16 +189,7 @@ export default function DashboardLayout() {
           </List>
         </Stack>
       </Drawer>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
-      >
+      <Box component="main" width="100%" height="100%">
         <Outlet />
       </Box>
     </Box>

@@ -12,12 +12,14 @@ import EnvsPage from './pages/envs/envs.page';
 import ScriptsPage from './pages/scripts/scripts.page';
 import RunsPage from './pages/runs/runs.page';
 import SettingsPage from './pages/settings/settings.page';
+import ScriptsDetailsPage from './pages/scripts/scripts.details.page';
+import RunsDetailsPage from './pages/runs/runs.details.page';
 
 export type AppProps = {
   apiProviders?: ApiProviders;
 };
 
-export default function App(props?: AppProps) {
+export function App(props?: AppProps) {
   const { apiProviders } = useMemo(() => props || {}, [props]);
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
@@ -31,7 +33,7 @@ export default function App(props?: AppProps) {
     [prefersDarkMode]
   );
 
-  const apiProvides: ApiProviders = useMemo(
+  const providers: ApiProviders = useMemo(
     () => ({
       ...noops,
       ...apiProviders,
@@ -40,20 +42,26 @@ export default function App(props?: AppProps) {
   );
 
   return (
-    <ApiProvider value={apiProvides}>
+    <ApiProvider value={providers}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <BrowserRouter>
           <Routes>
             <Route element={<DashboardLayout />}>
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/envs" element={<EnvsPage />} />
-              <Route path="/scripts" element={<ScriptsPage />} />
-              <Route path="/runs" element={<RunsPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="envs" element={<EnvsPage />} />
+              <Route path="scripts">
+                <Route index element={<ScriptsPage />} />
+                <Route path=":id" element={<ScriptsDetailsPage />} />
+              </Route>
+              <Route path="runs">
+                <Route index element={<RunsPage />} />
+                <Route path=":id" element={<RunsDetailsPage />} />
+              </Route>
+              <Route path="settings" element={<SettingsPage />} />
             </Route>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </BrowserRouter>

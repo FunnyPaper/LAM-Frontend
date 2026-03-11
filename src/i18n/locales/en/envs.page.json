@@ -1,3 +1,30 @@
 {
-  "header": "Envs"
+  "header": "Envs",
+  "drawer": {
+    "remove": "Remove"
+  },
+  "createModal": {
+    "title": "Create Env"
+  },
+  "form": {
+    "section": {
+      "details": "Details",
+      "variables": "Variables"
+    },
+    "fields": {
+      "name": "Name",
+      "description": "Description",
+      "key": "Key",
+      "value": "Value",
+      "addField": "Add field",
+      "removeAll": "Remove all",
+      "save": "Save"
+    },
+    "validation": {
+      "required": "{{key}} is required",
+      "unique": "{{key}} must be unique",
+      "minLength": "Min {{length}} characters",
+      "maxLength": "Max {{length}} characters"
+    }
+  }
 }

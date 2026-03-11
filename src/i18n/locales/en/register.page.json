@@ -12,7 +12,12 @@
       "pattern": {
         "email": "Invalid email address"
       },
-      "credentials": "Invalid credentials"
+      "credentials": "Invalid credentials",
+      "strongPassword": "Not a strong password"
+    },
+    "tooltip": {
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
     },
     "signed": "Login instead"
   }
