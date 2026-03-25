@@ -1,94 +1,146 @@
-import {
-  addEdge,
-  applyEdgeChanges,
-  applyNodeChanges,
-  Background,
-  BackgroundVariant,
-  Controls,
-  MiniMap,
-  ReactFlow,
-  type Connection,
-  type Edge,
-  type EdgeChange,
-  type Node,
-  type NodeChange,
-  type ProOptions,
-} from '@xyflow/react';
-import { useCallback, useState } from 'react';
-import '@xyflow/react/dist/style.css';
-import { nodeTypes } from '../../components/flow/nodes/node.type';
 import { useTranslation } from 'react-i18next';
+import { AppBar, Box, Button, Skeleton, Stack, Typography } from '@mui/material';
+import { type PaginationParams, ScriptsList } from '../../components/lists/scripts/scripts.list';
+import { ConfirmModal } from '../../components/modals/confirm.modal';
+import { type ScriptSearchParams, ScriptsSearchBar } from '../../components/searchbars/scripts.searchbar';
+import { Suspense, useMemo } from 'react';
+import { useContext, useState } from 'react';
+import { ApiProvider } from '../../providers/api.provider';
+import type { ScriptDto } from '../../api/queries/script.provider';
+import { Add } from '@mui/icons-material';
+import { CreateScriptModal } from '../../components/modals/create-script.modal';
+import type { CreateScriptDto } from '../../api/commands/script/create.script.provider';
+import { useNavigate } from 'react-router';
+import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
+import { useDebounce } from 'use-debounce';
 
-const initialNodes: Node[] = [
-  {
-    id: 'n1',
-    type: 'button',
-    position: { x: -100, y: 0 },
-    data: { label: 'Profile', path: '/profile' },
+const defaultSearchParams: ScriptSearchParams & PaginationParams = {
+  page: 0,
+  limit: 10,
+  filter: {
+    name: '',
   },
-  {
-    id: 'n2',
-    type: 'button',
-    position: { x: 100, y: 0 },
-    data: { label: 'Envs', path: '/envs' },
+  sort: {
+    field: 'name',
+    order: 'asc',
   },
-  {
-    id: 'n4',
-    type: 'button',
-    position: { x: -100, y: 100 },
-    data: { label: 'Runs', path: '/runs' },
-  },
-  {
-    id: 'n5',
-    type: 'button',
-    position: { x: 100, y: 100 },
-    data: { label: 'Settings', path: '/settings' },
-  },
-];
+};
 
-const initialEdges: Edge[] = [];
-
-const proOptions: ProOptions = { hideAttribution: true };
-
-export default function ScriptsPage() {
+export function ScriptsPage() {
   const { t } = useTranslation('scripts');
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
+  const {
+    script: { getAll, remove, create },
+  } = useContext(ApiProvider)!;
+  const navigate = useNavigate();
 
-  const onNodesChange = useCallback(
-    (changes: NodeChange<Node>[]) =>
-      setNodes((snap) => applyNodeChanges(changes, snap)),
-    []
-  );
+  const [openRemoveConfirmModal, setOpenRemoveConfirmModal] = useState(false);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [selectedScript, setSelectedScript] = useState<ScriptDto | null>(null);
+  const [searchParams, setSearchParams] = useState<ScriptSearchParams & PaginationParams>(defaultSearchParams);
+  const [debouncedName] = useDebounce(searchParams.filter?.name, 300);
 
-  const onEdgesChange = useCallback(
-    (changes: EdgeChange<Edge>[]) =>
-      setEdges((snap) => applyEdgeChanges(changes, snap)),
-    []
+  const getAddScriptsDataSource = useMemo(
+    () => getAll({ ...searchParams, filter: { ...searchParams, name: debouncedName } }),
+    [getAll, searchParams, debouncedName]
   );
+  const {
+    data: scripts,
+    isLoading: isScriptsLoading,
+    invalidate: invalidateScript,
+  } = useDataSourceHook(getAddScriptsDataSource);
 
-  const onConnect = useCallback(
-    (params: Connection) => setEdges((snap) => addEdge(params, snap)),
-    []
-  );
+  const handleRemove = (script: ScriptDto) => {
+    setSelectedScript(script);
+    setOpenRemoveConfirmModal(true);
+  };
+
+  const handleConfirmRemove = async () => {
+    if (!selectedScript) return;
+
+    await remove(selectedScript.id);
+    setOpenRemoveConfirmModal(false);
+    setSelectedScript(null);
+    invalidateScript();
+  };
+
+  const handleCancelRemove = () => {
+    setOpenRemoveConfirmModal(false);
+    setSelectedScript(null);
+  };
+
+  const handleSearchParamsChanged = (params: ScriptSearchParams | PaginationParams) => {
+    setSearchParams({
+      ...searchParams,
+      ...params,
+    });
+  };
+
+  const handleCreateScript = async (data: CreateScriptDto) => {
+    try {
+      await create(data);
+    } finally {
+      setOpenCreateModal(false);
+      invalidateScript();
+    }
+  };
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        proOptions={proOptions}
-        colorMode="dark"
-        fitView
+    <Stack height="100%">
+      <AppBar
+        position="relative"
+        sx={{
+          p: 2,
+          backgroundColor: 'background.paper',
+          color: 'text.primary',
+        }}
       >
-        <Controls />
-        <MiniMap />
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-      </ReactFlow>
-    </div>
+        <Stack direction="row" gap={2} alignItems="center">
+          <Typography variant="h4">{t('header')}</Typography>
+          <Button
+            size="small"
+            variant="contained"
+            color="primary"
+            sx={{ minWidth: '40px', height: '40px', alignSelf: 'center' }}
+            onClick={() => setOpenCreateModal(true)}
+          >
+            <Add />
+          </Button>
+          <ScriptsSearchBar
+            onSearch={() => setSearchParams(searchParams)}
+            searchParams={searchParams}
+            onSearchParamsChanged={handleSearchParamsChanged}
+          />
+        </Stack>
+      </AppBar>
+      <Box p={2} height="100%">
+        <Box component="div" height="100%">
+          <Suspense fallback={<Skeleton />}>
+            <ScriptsList
+              onScriptEditClick={(data) => navigate(`/scripts/${data.id}`)}
+              onScriptDeleteClick={handleRemove}
+              onPaginationParamsChange={handleSearchParamsChanged}
+              searchParams={searchParams}
+              scripts={scripts}
+              isLoading={isScriptsLoading}
+            />
+          </Suspense>
+        </Box>
+        <ConfirmModal
+          open={openRemoveConfirmModal}
+          title={t('confirm.delete.title')}
+          content={t('confirm.delete.content')}
+          onConfirm={handleConfirmRemove}
+          onCancel={handleCancelRemove}
+          confirmButtonText={t('confirm.delete.confirm')}
+          cancelButtonText={t('confirm.delete.cancel')}
+          confirmButtonColor="error"
+        />
+        <CreateScriptModal
+          open={openCreateModal}
+          onClose={() => setOpenCreateModal(false)}
+          onCreate={handleCreateScript}
+        />
+      </Box>
+    </Stack>
   );
 }

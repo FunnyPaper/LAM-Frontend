@@ -21,11 +21,7 @@ export type DropzoneProps<T> = {
   disabled?: boolean;
 };
 
-export default function Dropzone<T>({
-  value,
-  onChange,
-  disabled,
-}: DropzoneProps<T>) {
+export function Dropzone<T>({ value, onChange, disabled }: DropzoneProps<T>) {
   const { t } = useTranslation('common');
   const [error, setError] = useState<string | null>(null);
   const [filename, setFilename] = useState<string | null>(null);
@@ -49,11 +45,7 @@ export default function Dropzone<T>({
         setError(null);
         onChange(json);
       } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : t('components.dropzone.errors.invalidJson')
-        );
+        setError(err instanceof Error ? err.message : t('components.dropzone.errors.invalidJson'));
       }
     },
     [onChange, t]
@@ -83,7 +75,7 @@ export default function Dropzone<T>({
           borderRadius: 2,
           p: 3,
           textAlign: 'center',
-          cursor: disabled ? 'not-alowed' : 'pointer',
+          cursor: disabled ? 'not-allowed' : 'pointer',
           bgcolor: isDragActive ? 'action.hover' : 'transparent',
           opacity: disabled ? 0.6 : 1,
           '&:hover': {
@@ -93,11 +85,9 @@ export default function Dropzone<T>({
       >
         <input {...getInputProps()} />
 
-        <Typography variant="body1">
-          {t('components.dropzone.dragNDrop')}
-        </Typography>
+        <Typography variant="body1">{t('components.dropzone.dragNDrop')}</Typography>
 
-        <Typography variant="body2" color="text.secondry">
+        <Typography variant="body2" color="text.secondary">
           {t('components.dropzone.clickToSelect')}
         </Typography>
 
@@ -108,13 +98,7 @@ export default function Dropzone<T>({
         )}
 
         {value && (
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            margin="auto"
-            gap={1}
-          >
+          <Box display="flex" alignItems="center" justifyContent="center" margin="auto" gap={1}>
             <Button
               variant="contained"
               size="small"

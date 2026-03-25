@@ -6,6 +6,14 @@
   "createModal": {
     "title": "Create Env"
   },
+  "confirm": {
+    "delete": {
+      "title": "Delete Environment",
+      "content": "Are you sure you want to delete this environment? This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    }
+  },
   "form": {
     "section": {
       "details": "Details",
@@ -18,7 +26,12 @@
       "value": "Value",
       "addField": "Add field",
       "removeAll": "Remove all",
-      "save": "Save"
+      "save": "Save",
+      "sortBy": "Sort by",
+      "search": "Search",
+      "reset": "Reset",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at"
     },
     "validation": {
       "required": "{{key}} is required",
@@ -26,5 +39,9 @@
       "minLength": "Min {{length}} characters",
       "maxLength": "Max {{length}} characters"
     }
+  },
+  "table": {
+    "displayedRows": "Page",
+    "rowsPerPage": "Limit"
   }
 }

@@ -1,0 +1,1 @@
+export type LogoutAuthProvider = () => Promise<void>

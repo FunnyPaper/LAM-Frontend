@@ -1,7 +1,9 @@
 import {
+  Box,
   Card,
   CardContent,
   CardHeader,
+  Chip,
   Collapse,
   Divider,
   IconButton,
@@ -9,15 +11,17 @@ import {
   Typography,
 } from '@mui/material';
 import type { EnvDto } from '../../../api/queries/env.provider';
-import { Delete, Edit, ExpandLess, ExpandMore } from '@mui/icons-material';
+import { AddCircle, Delete, Edit, ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useState } from 'react';
+import { format } from 'date-fns';
 
 export type EnvsListItemProps = {
   env: EnvDto;
   onEdit: (data: EnvDto) => void;
+  onDelete: (data: EnvDto) => void;
 };
 
-export default function EnvsListItem({ env, onEdit }: EnvsListItemProps) {
+export function EnvsListItem({ env, onEdit, onDelete }: EnvsListItemProps) {
   const [expand, setExpand] = useState(false);
 
   return (
@@ -26,25 +30,38 @@ export default function EnvsListItem({ env, onEdit }: EnvsListItemProps) {
         action={
           <Stack direction="row">
             {env.description && (
-              <IconButton onClick={() => setExpand((p) => !p)}>
-                {!expand ? <ExpandMore /> : <ExpandLess />}
-              </IconButton>
+              <IconButton onClick={() => setExpand((p) => !p)}>{!expand ? <ExpandMore /> : <ExpandLess />}</IconButton>
             )}
             <IconButton onClick={() => onEdit(env)}>
               <Edit />
             </IconButton>
-            <IconButton>
+            <IconButton onClick={() => onDelete(env)}>
               <Delete />
             </IconButton>
           </Stack>
         }
         title={
-          <Typography
-            noWrap={false}
-            sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-          >
-            {env.name}
-          </Typography>
+          <Stack direction="row" spacing={1} flexWrap="wrap">
+            <Typography noWrap={false} sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {env.name}
+            </Typography>
+            {env.createdAt && (
+              <Chip
+                icon={<AddCircle />}
+                label={format(new Date(env.createdAt), 'yyyy/MM/dd HH:mm')}
+                size="small"
+                variant="outlined"
+              />
+            )}
+            {env.updatedAt && (
+              <Chip
+                icon={<Edit />}
+                label={format(new Date(env.updatedAt), 'yyyy/MM/dd HH:mm')}
+                size="small"
+                variant="outlined"
+              />
+            )}
+          </Stack>
         }
         sx={{
           '.MuiCardHeader-content': {
@@ -53,16 +70,29 @@ export default function EnvsListItem({ env, onEdit }: EnvsListItemProps) {
           },
         }}
       />
-      {env.description && (
-        <Collapse in={expand}>
-          <Divider />
-          <CardContent sx={{ maxHeight: 200, overflowY: 'auto' }}>
+
+      <Collapse in={expand}>
+        <Divider />
+        <CardContent sx={{ maxHeight: 200, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {env.description && (
             <Typography variant="body2" textAlign="justify">
               {env.description}
             </Typography>
-          </CardContent>
-        </Collapse>
-      )}
+          )}
+          {env.data && (
+            <Box
+              sx={{
+                p: 2,
+                bgcolor: 'background.default',
+              }}
+            >
+              <Typography variant="body2" component="pre">
+                {JSON.stringify(env.data, null, 2)}
+              </Typography>
+            </Box>
+          )}
+        </CardContent>
+      </Collapse>
     </Card>
   );
 }

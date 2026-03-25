@@ -96,16 +96,8 @@ const Drawer = styled(MuiDrawer, {
   ],
 }));
 
-const listItemProvider = (
-  open: boolean,
-  description: { text: string; path: string; icon: ReactNode }
-) => (
-  <ListItem
-    key={description.text}
-    disablePadding
-    disableGutters
-    sx={{ display: 'block' }}
-  >
+const listItemProvider = (open: boolean, description: { text: string; path: string; icon: ReactNode }) => (
+  <ListItem key={description.text} disablePadding disableGutters sx={{ display: 'block' }}>
     <Link to={description.path}>
       <ListItemButton
         sx={[
@@ -127,16 +119,16 @@ const listItemProvider = (
         >
           {description.icon}
         </ListItemIcon>
-        <ListItemText
-          primary={description.text}
-          sx={{ opacity: open ? 1 : 0 }}
-        />
+        <ListItemText primary={description.text} sx={{ opacity: open ? 1 : 0, color: 'text.primary' }} />
       </ListItemButton>
     </Link>
   </ListItem>
 );
 
-export default function DashboardLayout() {
+// TODO: Move all App bars in each page to be a part of this layout
+// It happened that App bar is always a part of page inside this layout
+
+export function DashboardLayout() {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
 

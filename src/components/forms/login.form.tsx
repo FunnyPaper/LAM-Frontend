@@ -1,13 +1,4 @@
-import {
-  Alert,
-  Box,
-  Button,
-  IconButton,
-  InputAdornment,
-  TextField,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import { Alert, Box, Button, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material';
 import { isStrongPassword } from 'class-validator';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +16,7 @@ export type LoginFormProps = {
   onSubmit: (data: LoginFormDto) => Promise<void>;
 };
 
-export default function LoginForm({ onSubmit }: LoginFormProps) {
+export function LoginForm({ onSubmit }: LoginFormProps) {
   const { t } = useTranslation('login');
 
   const {
@@ -121,23 +112,13 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
               input: {
                 endAdornment: (
                   <InputAdornment position="end">
-                    <Tooltip
-                      title={
-                        showPassword
-                          ? t('form.tooltip.hidePassword')
-                          : t('form.tooltip.showPassword')
-                      }
-                    >
+                    <Tooltip title={showPassword ? t('form.tooltip.hidePassword') : t('form.tooltip.showPassword')}>
                       <IconButton
                         size="small"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => setShowPassword((prev) => !prev)}
                       >
-                        {showPassword ? (
-                          <VisibilityOff />
-                        ) : (
-                          <Visibility fontSize="small" />
-                        )}
+                        {showPassword ? <VisibilityOff /> : <Visibility fontSize="small" />}
                       </IconButton>
                     </Tooltip>
                   </InputAdornment>
@@ -150,13 +131,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
 
       {errors.root && <Alert severity="error">{errors.root.message}</Alert>}
 
-      <Button
-        type="submit"
-        variant="contained"
-        fullWidth
-        sx={{ mt: 2 }}
-        startIcon={<Login />}
-      >
+      <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }} startIcon={<Login />}>
         <Typography variant="button">{t('form.fields.login')}</Typography>
       </Button>
 

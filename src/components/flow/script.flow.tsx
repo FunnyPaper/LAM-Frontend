@@ -1,0 +1,86 @@
+import {
+  addEdge,
+  applyEdgeChanges,
+  applyNodeChanges,
+  Background,
+  BackgroundVariant,
+  Controls,
+  MiniMap,
+  ReactFlow,
+  type Connection,
+  type Edge,
+  type EdgeChange,
+  type Node,
+  type NodeChange,
+  type ProOptions,
+} from '@xyflow/react';
+import { useCallback, useState } from 'react';
+import { nodeTypes } from './nodes/node.type';
+
+const initialNodes: Node[] = [
+  {
+    id: 'n1',
+    type: 'button',
+    position: { x: -100, y: 0 },
+    data: { label: 'Profile', path: '/profile' },
+  },
+  {
+    id: 'n2',
+    type: 'button',
+    position: { x: 100, y: 0 },
+    data: { label: 'Envs', path: '/envs' },
+  },
+  {
+    id: 'n4',
+    type: 'button',
+    position: { x: -100, y: 100 },
+    data: { label: 'Runs', path: '/runs' },
+  },
+  {
+    id: 'n5',
+    type: 'button',
+    position: { x: 100, y: 100 },
+    data: { label: 'Settings', path: '/settings' },
+  },
+];
+
+const initialEdges: Edge[] = [];
+
+const proOptions: ProOptions = { hideAttribution: true };
+
+export function ScriptFlow() {
+  const [nodes, setNodes] = useState(initialNodes);
+  const [edges, setEdges] = useState(initialEdges);
+
+  const onNodesChange = useCallback(
+    (changes: NodeChange<Node>[]) => setNodes((snap) => applyNodeChanges(changes, snap)),
+    []
+  );
+
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange<Edge>[]) => setEdges((snap) => applyEdgeChanges(changes, snap)),
+    []
+  );
+
+  const onConnect = useCallback((params: Connection) => setEdges((snap) => addEdge(params, snap)), []);
+
+  return (
+    <div style={{ width: '100%', height: '100%' }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        proOptions={proOptions}
+        colorMode="dark"
+        fitView
+      >
+        <Controls />
+        <MiniMap />
+        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+      </ReactFlow>
+    </div>
+  );
+}

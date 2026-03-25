@@ -1,9 +1,18 @@
 import { useContext } from 'react';
-import { ApiProvider } from '../../api/api.provider';
-import RegisterForm from '../../components/forms/register.form';
+import { ApiProvider } from '../../providers/api.provider';
+import { RegisterForm } from '../../components/forms/register.form';
+import { useNavigate } from 'react-router';
+import type { RegisterDto } from 'lam-frontend/api/commands/auth/register.auth.provider';
 
-export default function RegisterPage() {
-  const { register } = useContext(ApiProvider);
+export function RegisterPage() {
+  const { auth } = useContext(ApiProvider)!;
+  const navigate = useNavigate();
 
-  return <RegisterForm onSubmit={register} />;
+  const redirectTo = '/profile';
+  const handleRegister = async (data: RegisterDto) => {
+    await auth.login(data);
+    navigate(redirectTo, { replace: true });
+  };
+
+  return <RegisterForm onSubmit={handleRegister} />;
 }

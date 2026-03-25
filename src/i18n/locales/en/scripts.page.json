@@ -1,3 +1,65 @@
 {
-  "header": "Scripts"
+  "header": "Scripts",
+  "backToList": "Back to scripts list",
+  "details": {
+    "header": "Script Details",
+    "remove": "Remove"
+  },
+  "search": {
+    "placeholder": "Search scripts..."
+  },
+  "lastVersion": {
+    "astVersion": "AST v{{version}}",
+    "engineVersion": "Engine v{{version}}",
+    "versionNumber": "V{{version}}"
+  },
+  "confirm": {
+    "delete": {
+      "title": "Delete Script",
+      "content": "Are you sure you want to delete this script? This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    }
+  },
+  "form": {
+    "fields": {
+      "name": "Name",
+      "sortBy": "Sort By",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At"
+    }
+  },
+  "modal": {
+    "create": {
+      "title": "Create Script"
+    },
+    "update": {
+      "title": "Update Script"
+    },
+    "name": "Name",
+    "description": "Description",
+    "save": "Save",
+    "required": "Field {{field}} is required."
+  },
+  "editor": {
+    "title": "Script editor",
+    "filename": "script.json",
+    "save": "Save",
+    "saveAs": "Save as",
+    "envVariables": "Environment variables",
+    "upload": "Upload",
+    "download": "Download"
+  },
+  "version": {
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    }
+  },
+  "table": {
+    "displayedRows": "Page",
+    "rowsPerPage": "Limit"
+  },
+  "notFound": "Script not found"
 }

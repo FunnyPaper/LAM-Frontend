@@ -1,3 +1,7 @@
 {
-  "header": "Settings"
+  "header": "Settings",
+  "languageSettings": "Language Settings",
+  "themeSettings": "Theme Settings",
+  "language": "Language",
+  "darkMode": "Dark Mode"
 }

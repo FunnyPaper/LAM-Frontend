@@ -1,14 +1,8 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  IconButton,
-} from '@mui/material';
+import { Dialog, DialogContent, DialogTitle, Divider, IconButton } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { CreateEnvDto } from '../../api/commands/env/create.env.provider';
 import { Close } from '@mui/icons-material';
-import EnvForm from '../forms/env.form';
+import { EnvForm } from '../forms/env.form';
 
 export type CreateEnvModalProps = {
   open: boolean;
@@ -16,15 +10,11 @@ export type CreateEnvModalProps = {
   onCreate: (data: CreateEnvDto) => void;
 };
 
-export default function CreateEnvModal({
-  open,
-  onClose,
-  onCreate,
-}: CreateEnvModalProps) {
+export function CreateEnvModal({ open, onClose, onCreate }: CreateEnvModalProps) {
   const { t } = useTranslation('envs');
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} fullWidth>
       <DialogTitle>{t('createModal.title')}</DialogTitle>
       <IconButton
         onClick={onClose}
@@ -39,7 +29,7 @@ export default function CreateEnvModal({
       </IconButton>
       <Divider />
       <DialogContent>
-        <EnvForm onSubmit={onCreate} />
+        <EnvForm<CreateEnvDto> onSubmit={onCreate} />
       </DialogContent>
     </Dialog>
   );

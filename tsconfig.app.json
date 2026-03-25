@@ -25,5 +25,5 @@
       "lam-frontend/*": ["./src/*"]
     }
   },
-  "include": ["src", "dev/main.tsx"]
+  "include": ["src", "dev"]
 }

@@ -1,3 +1,77 @@
 {
-  "header": "Runs"
+  "header": "Runs",
+  "loading": "Loading...",
+  "notFound": "Script run not found",
+  "backToList": "Back to runs list",
+  "confirm": {
+    "delete": {
+      "title": "Delete Script Run",
+      "content": "Are you sure you want to delete this script run? This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    }
+  },
+  "form": {
+    "fields": {
+      "status": "Status",
+      "allStatuses": "All Statuses",
+      "sortBy": "Sort By",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "finishedAt": "Finished At"
+    }
+  },
+  "createModal": {
+    "title": "Create Script Run",
+    "scripts": "Scripts",
+    "environments": "Environments",
+    "name": "Name",
+    "description": "Description",
+    "noDescription": "No description",
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "run": "Run"
+  },
+  "details": {
+    "header": "Script Run Details",
+    "generalInfo": "General Information",
+    "id": "ID",
+    "script": "Script",
+    "environment": "Environment",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "finishedAt": "Finished At",
+    "scriptVersionSnapshot": "Script Version Snapshot",
+    "envSnapshot": "Environment Snapshot",
+    "cachedData": "This is cached data that may not be up to date",
+    "versionNumber": "Version Number",
+    "status": "Status",
+    "content": "Content",
+    "name": "Name",
+    "data": "Data",
+    "events": "Events",
+    "eventsDescription": "Real-time events during script execution",
+    "loadingEvents": "Loading events...",
+    "noEvents": "No events yet",
+    "result": "Result",
+    "resultDescription": "Final result after script execution",
+    "resultData": "Result Data",
+    "noResult": "No result data available",
+    "stop": "Stop",
+    "remove": "Remove",
+    "download": "Download",
+    "eventsTruncated": "Event panel is truncated to list only the newest events"
+  },
+  "status": {
+    "unknown": "Unknown",
+    "queued": "Queued",
+    "running": "Running",
+    "succeeded": "Succeeded",
+    "failed": "Failed",
+    "cancelled": "Cancelled"
+  },
+  "table": {
+    "displayedRows": "Page",
+    "rowsPerPage": "Limit"
+  }
 }

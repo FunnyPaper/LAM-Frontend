@@ -1,3 +1,7 @@
 {
-  "header": "Ustawienia"
+  "header": "Ustawienia",
+  "languageSettings": "Ustawienia językowe",
+  "themeSettings": "Ustawienia motywu",
+  "language": "Język",
+  "darkMode": "Tryb ciemny"
 }

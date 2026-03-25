@@ -5,7 +5,7 @@ import profile from './profile.page.json';
 import envs from './envs.page.json';
 import scripts from './scripts.page.json';
 import runs from './runs.page.json';
-import settings from './settings.page.json'
+import settings from './settings.page.json';
 
 export default {
   common,

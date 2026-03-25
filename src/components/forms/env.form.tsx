@@ -1,21 +1,16 @@
 import { Add, Delete, Save } from '@mui/icons-material';
 import { Box, Button, Stack, TextField, Typography } from '@mui/material';
-import {
-  Controller,
-  useFieldArray,
-  useForm,
-  type Control,
-  type FieldPath,
-} from 'react-hook-form';
+import { Controller, useFieldArray, useForm, type Control, type FieldPath } from 'react-hook-form';
 import type { EnvDto } from '../../api/queries/env.provider';
 import { useTranslation } from 'react-i18next';
 import type { UpdateEnvDto } from '../../api/commands/env/update.env.provider';
-import Dropzone from '../common/dropzone';
+import { Dropzone } from '../common/dropzone';
 import { useCallback, type ReactNode } from 'react';
+import type { CreateEnvDto } from 'lam-frontend/api/commands/env/create.env.provider';
 
-export type EnvFormProps = {
+export type EnvFormProps<T extends UpdateEnvDto | CreateEnvDto> = {
   defaultValues?: EnvDto;
-  onSubmit: (data: UpdateEnvDto) => void;
+  onSubmit: (data: T) => void;
 };
 
 type FieldRowData = {
@@ -31,7 +26,7 @@ type EnvFormData = {
   temporaryField: FieldRowData;
 };
 
-export default function EnvForm({ defaultValues, onSubmit }: EnvFormProps) {
+export function EnvForm<T extends UpdateEnvDto | CreateEnvDto>({ defaultValues, onSubmit }: EnvFormProps<T>) {
   const { t } = useTranslation('envs');
 
   const transformFields = useCallback(
@@ -49,17 +44,15 @@ export default function EnvForm({ defaultValues, onSubmit }: EnvFormProps) {
     fields: transformFields(defaultValues.data || {}),
   };
 
-  const { control, getValues, trigger, resetField, handleSubmit } =
-    useForm<EnvFormData>({
-      defaultValues: {
-        ...transformedDefaultValues,
-        temporaryField: {
-          key: '',
-          value: '',
-        },
-      },
-      reValidateMode: 'onSubmit',
-    });
+  const { control, getValues, trigger, resetField, handleSubmit } = useForm<EnvFormData>({
+    defaultValues: {
+      name: '',
+      description: '',
+      temporaryField: { key: '', value: '' },
+      ...transformedDefaultValues,
+    },
+    reValidateMode: 'onSubmit',
+  });
 
   const { fields, append, remove, replace } = useFieldArray({
     control,
@@ -68,16 +61,14 @@ export default function EnvForm({ defaultValues, onSubmit }: EnvFormProps) {
 
   const internalOnSubmit = (data: EnvFormData) => {
     const json = Object.fromEntries(
-      data.fields
-        .filter(({ key }) => key?.trim() !== '')
-        .map(({ key, value }) => [key, value])
+      data.fields.filter(({ key }) => key?.trim() !== '').map(({ key, value }) => [key, value])
     );
 
     onSubmit({
       name: data.name,
       description: data.description,
       data: json,
-    });
+    } as T);
   };
 
   const defineField = (
@@ -86,27 +77,25 @@ export default function EnvForm({ defaultValues, onSubmit }: EnvFormProps) {
     control: Control<EnvFormData>,
     key: string,
     action: ReactNode,
-    keysValidatorProvider: () => string[]
+    keysValidatorProvider: () => string[],
+    isRequired: boolean
   ) => (
     <Box key={key} display="flex" gap={1} alignItems="start">
       <Controller
         name={keyName}
         control={control}
         rules={{
-          required: t('form.validation.required', {
-            key: t('form.fields.key'),
-          }),
+          required:
+            isRequired &&
+            t('form.validation.required', {
+              key: t('form.fields.key'),
+            }),
           validate: (value) => {
             const keys = keysValidatorProvider();
 
-            const duplicates = keys.filter(
-              (k) => k === (value as string)?.trim()
-            );
+            const duplicates = keys.filter((k) => k === (value as string)?.trim());
 
-            return (
-              duplicates.length === 1 ||
-              t('form.validation.unique', { key: t('form.fields.key') })
-            );
+            return duplicates.length === 1 || t('form.validation.unique', { key: t('form.fields.key') });
           },
         }}
         render={({ field, fieldState }) => (
@@ -128,14 +117,7 @@ export default function EnvForm({ defaultValues, onSubmit }: EnvFormProps) {
       <Controller
         name={valueName}
         control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label={t('form.fields.value')}
-            fullWidth
-            size="small"
-          />
-        )}
+        render={({ field }) => <TextField {...field} label={t('form.fields.value')} fullWidth size="small" />}
       />
 
       {action}
@@ -143,15 +125,9 @@ export default function EnvForm({ defaultValues, onSubmit }: EnvFormProps) {
   );
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit(internalOnSubmit)}
-      sx={{ maxWidth: 400, mx: 'auto' }}
-    >
+    <Box component="form" onSubmit={handleSubmit(internalOnSubmit)} width="100%">
       <Stack gap={1}>
-        <Typography variant="body1" mb={1}>
-          {t('form.section.details')}
-        </Typography>
+        <Typography variant="body1">{t('form.section.details')}</Typography>
         <Controller
           name="name"
           control={control}
@@ -203,9 +179,6 @@ export default function EnvForm({ defaultValues, onSubmit }: EnvFormProps) {
             />
           )}
         />
-      </Stack>
-
-      <Stack spacing={1} mt={3}>
         <Stack direction="row">
           <Typography variant="body1" flex={1} alignContent="center">
             {t('form.section.variables')}
@@ -234,7 +207,8 @@ export default function EnvForm({ defaultValues, onSubmit }: EnvFormProps) {
             () =>
               getValues('fields')
                 .map((f) => f.key?.trim())
-                .filter(Boolean) as string[]
+                .filter(Boolean) as string[],
+            true
           )
         )}
 
@@ -273,14 +247,15 @@ export default function EnvForm({ defaultValues, onSubmit }: EnvFormProps) {
                 .map((f) => f.key?.trim())
                 .filter(Boolean),
               getValues('temporaryField.key'),
-            ] as string[]
+            ] as string[],
+          false
         )}
 
-        <Box display="flex" gap={1}>
+        <Stack direction="row" justifyContent="flex-end">
           <Button type="submit" variant="contained" startIcon={<Save />}>
             {t('form.fields.save')}
           </Button>
-        </Box>
+        </Stack>
       </Stack>
     </Box>
   );

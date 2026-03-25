@@ -2,6 +2,7 @@
   "header": "Profile",
   "form": {
     "fields": {
+      "details": "Details",
       "email": "Email",
       "update": "Update",
       "reset": "Reset"

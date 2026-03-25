@@ -1,33 +1,88 @@
-import {
-  AppBar,
-  Box,
-  Button,
-  Skeleton,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { AppBar, Box, Button, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import EditEnvDrawer from '../../components/drawers/edit-env.drawer';
-import EnvsList from '../../components/lists/envs/envs.list';
-import CreateEnvModal from '../../components/modals/create-env.modal';
-import { Suspense, useContext, useState } from 'react';
-import { ApiProvider } from '../../api/api.provider';
+import { EnvDrawer } from '../../components/drawers/env.drawer';
+import { type PaginationParams, EnvsList } from '../../components/lists/envs/envs.list';
+import { CreateEnvModal } from '../../components/modals/create-env.modal';
+import { ConfirmModal } from '../../components/modals/confirm.modal';
+import { type EnvSearchParams, EnvsSearchBar } from '../../components/searchbars/envs.searchbar';
+import { useContext, useMemo, useState } from 'react';
+import { ApiProvider } from '../../providers/api.provider';
 import type { EnvDto } from '../../api/queries/env.provider';
 import { Add } from '@mui/icons-material';
-import EnvsFilter from '../../components/filters/envs.filter';
+import type { CreateEnvDto } from 'lam-frontend/api/commands/env/create.env.provider';
+import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
+import { useDebounce } from 'use-debounce';
 
-export default function EnvsPage() {
+const defaultSearchParams: EnvSearchParams & PaginationParams = {
+  page: 0,
+  limit: 10,
+  filter: {
+    name: '',
+  },
+  sort: {
+    field: 'name',
+    order: 'asc',
+  },
+};
+
+export function EnvsPage() {
   const { t } = useTranslation('envs');
-  const { removeEnv, updateEnv, createEnv } = useContext(ApiProvider);
+  const {
+    env: { getAll, remove, update, create },
+  } = useContext(ApiProvider)!;
 
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openEditDrawer, setOpenEditDrawer] = useState(false);
-  const [selectedEnv, setSelectedEnv] = useState<EnvDto>();
+  const [openRemoveConfirmModal, setOpenRemoveConfirmModal] = useState(false);
+  const [selectedEnv, setSelectedEnv] = useState<EnvDto | null>(null);
+  const [searchParams, setSearchParams] = useState<EnvSearchParams & PaginationParams>(defaultSearchParams);
+  const [debouncedName] = useDebounce(searchParams.filter?.name, 300);
+
+  const getAllDataSource = useMemo(
+    () => getAll({ ...searchParams, filter: { ...searchParams?.filter, name: debouncedName } }),
+    [getAll, searchParams, debouncedName]
+  );
+
+  const { data: envs, isLoading: isEnvsLoading, invalidate: invalidateEnv } = useDataSourceHook(getAllDataSource);
+
+  const handleRemove = (env: EnvDto) => {
+    setSelectedEnv(env);
+    setOpenRemoveConfirmModal(true);
+  };
+
+  const handleConfirmRemove = async () => {
+    if (!selectedEnv) return;
+    await remove(selectedEnv.id);
+    setOpenRemoveConfirmModal(false);
+    setOpenEditDrawer(false);
+    setSelectedEnv(null);
+    invalidateEnv();
+  };
+
+  const handleCancelRemove = () => {
+    setOpenRemoveConfirmModal(false);
+    setSelectedEnv(null);
+    setOpenEditDrawer(false);
+  };
+
+  const handleParamsChange = (params: EnvSearchParams | PaginationParams) => {
+    setSearchParams({
+      ...searchParams,
+      ...params,
+    });
+  };
 
   return (
     <Stack height="100%">
-      <AppBar position="relative" sx={{ p: 2 }}>
-        <Stack direction="row" gap={2}>
+      <AppBar
+        position="relative"
+        sx={{
+          p: 2,
+          backgroundColor: 'background.paper',
+          color: 'text.primary',
+        }}
+      >
+        <Stack direction="row" gap={2} alignItems="center">
           <Typography variant="h4">{t('header')}</Typography>
           <Button
             size="small"
@@ -37,39 +92,58 @@ export default function EnvsPage() {
           >
             <Add />
           </Button>
-          <EnvsFilter />
+          <EnvsSearchBar
+            onSearch={() => setSearchParams(searchParams)}
+            searchParams={searchParams}
+            onSearchParamsChanged={handleParamsChange}
+          />
         </Stack>
       </AppBar>
       <Box p={2} height="100%">
         {selectedEnv && (
-          <EditEnvDrawer
+          <EnvDrawer<CreateEnvDto>
             open={openEditDrawer}
             env={selectedEnv}
-            onSubmit={updateEnv}
-            onRemove={(data) => {
-              removeEnv(data.id);
-              setOpenEditDrawer(false);
+            onSubmit={(data) => {
+              update(selectedEnv.id, data);
+              invalidateEnv();
             }}
+            onRemove={handleRemove}
             onClose={() => setOpenEditDrawer(false)}
           />
         )}
         <Box component="div" height="100%">
-          <Suspense fallback={<Skeleton />}>
-            <EnvsList
-              onButtonCreateClick={() => setOpenCreateModal(true)}
-              onEnvEditClick={(data) => {
-                setSelectedEnv(data);
-                setOpenEditDrawer(true);
-              }}
-            />
-          </Suspense>
+          <EnvsList
+            onEnvEditClick={(data) => {
+              setSelectedEnv(data);
+              setOpenEditDrawer(true);
+            }}
+            onEnvDeleteClick={handleRemove}
+            onPaginationParamsChange={handleParamsChange}
+            searchParams={searchParams}
+            envs={envs}
+            isLoading={isEnvsLoading}
+          />
 
           <CreateEnvModal
             open={openCreateModal}
             onClose={() => setOpenCreateModal(false)}
-            onCreate={createEnv}
+            onCreate={(data) => {
+              create(data);
+              invalidateEnv();
+            }}
           />
         </Box>
+        <ConfirmModal
+          open={openRemoveConfirmModal}
+          title={t('confirm.delete.title')}
+          content={t('confirm.delete.content')}
+          onConfirm={handleConfirmRemove}
+          onCancel={handleCancelRemove}
+          confirmButtonText={t('confirm.delete.confirm')}
+          cancelButtonText={t('confirm.delete.cancel')}
+          confirmButtonColor="error"
+        />
       </Box>
     </Stack>
   );

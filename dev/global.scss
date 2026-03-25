@@ -37,6 +37,16 @@ h1 {
   line-height: 1.1;
 }
 
+.editor-highlight__error {
+  text-decoration: red wavy underline;
+  text-underline-position: left under;
+}
+
+.editor-highlight__env {
+  color: black;
+  background-color: yellow;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

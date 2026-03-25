@@ -1,3 +1,65 @@
 {
-  "header": "Skrypty"
+  "header": "Skrypty",
+  "backToList": "Powrót do listy skryptów",
+  "details": {
+    "header": "Szczegóły skryptu",
+    "remove": "Usuń"
+  },
+  "search": {
+    "placeholder": "Szukaj skryptów..."
+  },
+  "lastVersion": {
+    "astVersion": "AST v{{version}}",
+    "engineVersion": "Silnik v{{version}}",
+    "versionNumber": "V{{version}}"
+  },
+  "confirm": {
+    "delete": {
+      "title": "Usuń skrypt",
+      "content": "Czy na pewno chcesz usunąć ten skrypt? Tej czynności nie można cofnąć.",
+      "confirm": "Usuń",
+      "cancel": "Anuluj"
+    }
+  },
+  "form": {
+    "fields": {
+      "name": "Nazwa",
+      "sortBy": "Sortuj według",
+      "createdAt": "Utworzono",
+      "updatedAt": "Zaktualizowano"
+    }
+  },
+  "modal": {
+    "create": {
+      "title": "Utwórz Skrypt"
+    },
+    "update": {
+      "title": "Zapisz skrypt"
+    },
+    "name": "Nazwa",
+    "description": "Opis",
+    "save": "Zapisz",
+    "required": "Pole {{field}} jest wymagane."
+  },
+  "editor": {
+    "title": "Edytor skryptu",
+    "filename": "script.json",
+    "save": "Zapisz",
+    "saveAs": "Zapisz jako",
+    "envVariables": "Zmienne środowiskowe",
+    "upload": "Wgraj",
+    "download": "Pobierz"
+  },
+  "version": {
+    "status": {
+      "draft": "Wersja robocza",
+      "published": "Opublikowany",
+      "archived": "Zarchiwizowany"
+    }
+  },
+  "table": {
+    "displayedRows": "Strona",
+    "rowsPerPage": "Limit"
+  },
+  "notFound": "Skryptu nie znaleziono"
 }

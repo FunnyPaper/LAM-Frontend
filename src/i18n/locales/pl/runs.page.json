@@ -1,3 +1,77 @@
 {
-  "header": "Uruchomienia"
+  "header": "Uruchomienia",
+  "loading": "Ładowanie...",
+  "notFound": "Nie znaleziono uruchomienia skryptu",
+  "backToList": "Powrót do listy uruchomień",
+  "confirm": {
+    "delete": {
+      "title": "Usuń uruchomienie skryptu",
+      "content": "Czy na pewno chcesz usunąć to uruchomienie skryptu? Tej czynności nie można cofnąć.",
+      "confirm": "Usuń",
+      "cancel": "Anuluj"
+    }
+  },
+  "form": {
+    "fields": {
+      "status": "Status",
+      "allStatuses": "Wszystkie statusy",
+      "sortBy": "Sortuj według",
+      "createdAt": "Utworzono",
+      "updatedAt": "Zaktualizowano",
+      "finishedAt": "Zakończono"
+    }
+  },
+  "createModal": {
+    "title": "Utwórz uruchomienie skryptu",
+    "scripts": "Skrypty",
+    "environments": "Środowiska",
+    "name": "Nazwa",
+    "description": "Opis",
+    "noDescription": "Brak opisu",
+    "loading": "Ładowanie...",
+    "cancel": "Anuluj",
+    "run": "Uruchom"
+  },
+  "details": {
+    "header": "Szczegóły uruchomienia skryptu",
+    "generalInfo": "Informacje ogólne",
+    "id": "ID",
+    "script": "Skrypt",
+    "environment": "Środowisko",
+    "createdAt": "Utworzono",
+    "updatedAt": "Zaktualizowano",
+    "finishedAt": "Zakończono",
+    "scriptVersionSnapshot": "Zrzut wersji skryptu",
+    "envSnapshot": "Zrzut środowiska",
+    "cachedData": "Są to dane z cache, które mogą nie być aktualne",
+    "versionNumber": "Numer wersji",
+    "status": "Status",
+    "content": "Zawartość",
+    "name": "Nazwa",
+    "data": "Dane",
+    "events": "Zdarzenia",
+    "eventsDescription": "Zdarzenia w czasie rzeczywistym podczas wykonywania skryptu",
+    "loadingEvents": "Ładowanie zdarzeń...",
+    "noEvents": "Brak zdarzeń",
+    "result": "Wynik",
+    "resultDescription": "Ostateczny wynik po wykonaniu skryptu",
+    "resultData": "Dane wyniku",
+    "noResult": "Brak danych wyniku",
+    "stop": "Zatrzymaj",
+    "remove": "Usuń",
+    "download": "Pobierz",
+    "eventsTruncated": "Panel zdarzeń jest przycięty aby pokazywać tylko najnowsze zdarzenia"
+  },
+  "status": {
+    "unknown": "Nieznany",
+    "queued": "W kolejce",
+    "running": "Uruchomiony",
+    "succeeded": "Wykonany",
+    "failed": "Nieudany",
+    "cancelled": "Przerwany"
+  },
+  "table": {
+    "displayedRows": "Strona",
+    "rowsPerPage": "Limit"
+  }
 }
