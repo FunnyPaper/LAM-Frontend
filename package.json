@@ -28,7 +28,7 @@
     },
     "dependencies": {
         "@fontsource/roboto": "5.2.x",
-        "@monaco-editor/react": "4.6.x",
+        "@monaco-editor/react": "4.7.x",
         "@xyflow/react": "12.10.x",
         "class-validator": "0.14.x",
         "date-fns": "4.1.x",
@@ -59,7 +59,7 @@
         "eslint-plugin-react-hooks": "7.0.x",
         "eslint-plugin-react-refresh": "0.4.x",
         "globals": "16.5.x",
-        "monaco-editor": "0.55.x",
+        "monaco-editor": "^0.55.0",
         "prettier": "3.8.x",
         "typescript": "5.9.x",
         "typescript-eslint": "8.46.x",
