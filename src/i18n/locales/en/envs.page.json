@@ -42,6 +42,15 @@
   },
   "table": {
     "displayedRows": "Page",
-    "rowsPerPage": "Limit"
+    "rowsPerPage": "Limit",
+    "header": "Environments",
+    "name": "Name",
+    "loading": "Loading..."
+  },
+  "list": {
+    "edit": "Edit",
+    "remove": "Remove",
+    "expand": "Expand",
+    "collapse": "Collapse"
   }
 }

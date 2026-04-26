@@ -26,6 +26,74 @@ export const scriptStore = create<ScriptState>((set, store) => ({
       description: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
       createdAt: '2023-01-01T00:00:00Z',
       updatedAt: '2023-01-01T00:00:00Z',
+      versions: [
+        {
+          id: '0',
+          content: {
+            astJson: {
+              type: 'published',
+            },
+            astVersion: 1,
+            engineVersion: 1,
+            createdAt: '2023-01-01T00:00:00Z',
+            updatedAt: '2023-01-01T00:00:00Z',
+          },
+          source: {
+            format: 'json',
+            content: '{}',
+            createdAt: '2023-01-01T00:00:00Z',
+            updatedAt: '2023-01-01T00:00:00Z',
+          },
+          versionNumber: 1,
+          status: 'Published',
+          createdAt: '2023-01-01T00:00:00Z',
+          updatedAt: '2023-01-01T00:00:00Z',
+        },
+        {
+          id: '1',
+          content: {
+            astJson: {
+              type: 'draft',
+            },
+            astVersion: 1,
+            engineVersion: 1,
+            createdAt: '2023-01-01T00:00:00Z',
+            updatedAt: '2023-01-01T00:00:00Z',
+          },
+          source: {
+            format: 'json',
+            content: '{}',
+            createdAt: '2023-01-01T00:00:00Z',
+            updatedAt: '2023-01-01T00:00:00Z',
+          },
+          versionNumber: 1,
+          status: 'Draft',
+          createdAt: '2023-01-01T00:00:00Z',
+          updatedAt: '2023-01-01T00:00:00Z',
+        },
+        {
+          id: '2',
+          content: {
+            astJson: {
+              type: 'archived',
+            },
+            astVersion: 1,
+            engineVersion: 1,
+            createdAt: '2023-01-01T00:00:00Z',
+            updatedAt: '2023-01-01T00:00:00Z',
+          },
+          source: {
+            format: 'json',
+            content: '{}',
+            createdAt: '2023-01-01T00:00:00Z',
+            updatedAt: '2023-01-01T00:00:00Z',
+          },
+          versionNumber: 1,
+          status: 'Archived',
+          createdAt: '2023-01-01T00:00:00Z',
+          updatedAt: '2023-01-01T00:00:00Z',
+        },
+      ],
     },
   ],
   getOne: (id: string) => {
@@ -96,6 +164,7 @@ export const scriptStore = create<ScriptState>((set, store) => ({
         id: `${Math.random() * 1000}`,
         createdAt: '2023-01-01T00:00:00Z',
         updatedAt: '2023-01-01T00:00:00Z',
+        versions: [],
       };
       copy.push(dto);
       return { ...state, state: copy };

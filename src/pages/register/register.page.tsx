@@ -10,7 +10,7 @@ export function RegisterPage() {
 
   const redirectTo = '/profile';
   const handleRegister = async (data: RegisterDto) => {
-    await auth.login(data);
+    await auth.register(data);
     navigate(redirectTo, { replace: true });
   };
 

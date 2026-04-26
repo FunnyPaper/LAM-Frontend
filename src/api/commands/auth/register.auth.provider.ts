@@ -1,6 +1,6 @@
 export type RegisterDto = {
-  email: string,
-  password: string
-}
+  username: string;
+  password: string;
+};
 
-export type RegisterAuthProvider = (data: RegisterDto) => Promise<void>
+export type RegisterAuthProvider = (data: RegisterDto) => Promise<void>;

@@ -1,3 +1,4 @@
+import type { ArchiveScriptVersionProvider } from 'lam-frontend/api/commands/script-version/archive.script-version.provider';
 import type { CreateScriptVersionProvider } from 'lam-frontend/api/commands/script-version/create.script-version.provider';
 import type { ForkScriptVersionProvider } from 'lam-frontend/api/commands/script-version/fork.script-version.provider';
 import type { PublishScriptVersionProvider } from 'lam-frontend/api/commands/script-version/publish.script-version.provider';
@@ -18,6 +19,7 @@ type ScriptVersionState = {
   create: CreateScriptVersionProvider;
   fork: ForkScriptVersionProvider;
   publish: PublishScriptVersionProvider;
+  archive: ArchiveScriptVersionProvider;
   remove: RemoveScriptVersionProvider;
   update: UpdateScriptVersionProvider;
 };
@@ -42,6 +44,7 @@ export const scriptVersionStore = create<ScriptVersionState>((set, store) => ({
       versionNumber: 1,
       status: 'Draft',
       createdAt: '2023-01-01T00:00:00Z',
+      updatedAt: '2023-01-01T00:00:00Z',
     },
   ],
   getOne: (scriptId, id) => {
@@ -89,15 +92,6 @@ export const scriptVersionStore = create<ScriptVersionState>((set, store) => ({
             case 'updatedAt':
               order = a.source.updatedAt.localeCompare(b.source.updatedAt);
               break;
-            case 'sourceFormat':
-              order = a.source.format.localeCompare(b.source.format);
-              break;
-            case 'engineVersion':
-              order = a.content.engineVersion - b.content.engineVersion;
-              break;
-            case 'astVersion':
-              order = a.content.astVersion - b.content.astVersion;
-              break;
           }
 
           return params.sort.order == 'desc' ? order * -1 : order;
@@ -141,6 +135,7 @@ export const scriptVersionStore = create<ScriptVersionState>((set, store) => ({
         versionNumber: 1,
         status: 'Draft',
         createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2023-01-01T00:00:00Z',
         source: {
           ...data.source,
           createdAt: '2023-01-01T00:00:00Z',
@@ -168,12 +163,24 @@ export const scriptVersionStore = create<ScriptVersionState>((set, store) => ({
       return { ...state, state: copy };
     });
   },
-  publish: async (scriptId, id) => {
+  publish: async (scriptId, id, data) => {
     set((state) => {
       const copy = state.state.slice();
       const dto = copy.find((s) => s.id == id);
       if (dto) {
         dto.status = 'Published';
+        dto.name = data.name;
+      }
+
+      return { ...state, state: copy };
+    });
+  },
+  archive: async (scriptId, id) => {
+    set((state) => {
+      const copy = state.state.slice();
+      const dto = copy.find((s) => s.id == id);
+      if (dto) {
+        dto.status = 'Archived';
       }
 
       return { ...state, state: copy };

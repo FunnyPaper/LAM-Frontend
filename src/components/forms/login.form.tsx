@@ -8,7 +8,7 @@ import { Login, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useState } from 'react';
 
 export type LoginFormDto = {
-  email: string;
+  username: string;
   password: string;
 };
 
@@ -27,7 +27,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
     formState: { errors },
   } = useForm<LoginFormDto>({
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
     },
   });
@@ -50,13 +50,13 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
       <Typography variant="h5">{t('header')}</Typography>
 
       <Controller
-        name="email"
+        name="username"
         control={control}
         rules={{
-          required: t('form.validation.required', { field: 'Email' }),
+          required: t('form.validation.required', { field: 'Username' }),
           pattern: {
-            value: /^\S+@\S+$/i,
-            message: t('form.validation.pattern.email'),
+            value: /^[a-zA-Z0-9._-]+$/i,
+            message: t('form.validation.pattern.username'),
           },
         }}
         render={({ field, fieldState }) => (
@@ -67,7 +67,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
               if (errors.root) clearErrors('root');
             }}
             autoComplete="off"
-            label={t('form.fields.email')}
+            label={t('form.fields.username')}
             fullWidth
             margin="normal"
             error={!!fieldState.error || !!errors.root}
@@ -118,7 +118,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => setShowPassword((prev) => !prev)}
                       >
-                        {showPassword ? <VisibilityOff /> : <Visibility fontSize="small" />}
+                        {!showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                       </IconButton>
                     </Tooltip>
                   </InputAdornment>

@@ -8,7 +8,7 @@ import { Create, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useState } from 'react';
 
 export type RegisterFormDto = {
-  email: string;
+  username: string;
   password: string;
   confirmPassword: string;
 };
@@ -28,7 +28,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormDto>({
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
       confirmPassword: '',
     },
@@ -54,13 +54,13 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
       <Typography variant="h5">{t('header')}</Typography>
 
       <Controller
-        name="email"
+        name="username"
         control={control}
         rules={{
-          required: t('form.validation.required', { field: 'Email' }),
+          required: t('form.validation.required', { field: 'Username' }),
           pattern: {
-            value: /^\S+@\S+$/i,
-            message: t('form.validation.pattern.email'),
+            value: /^[a-zA-Z0-9._-]+$/i,
+            message: t('form.validation.pattern.username'),
           },
         }}
         render={({ field, fieldState }) => (
@@ -71,7 +71,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
               if (errors.root) clearErrors('root');
             }}
             autoComplete="off"
-            label={t('form.fields.email')}
+            label={t('form.fields.username')}
             fullWidth
             margin="normal"
             error={!!fieldState.error || !!errors.root}
@@ -124,7 +124,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => setShowPassword((prev) => !prev)}
                       >
-                        {showPassword ? <VisibilityOff /> : <Visibility fontSize="small" />}
+                        {!showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                       </IconButton>
                     </Tooltip>
                   </InputAdornment>

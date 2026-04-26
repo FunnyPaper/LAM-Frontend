@@ -1,4 +1,4 @@
-import { Divider, Grid, Stack, TablePagination, Skeleton } from '@mui/material';
+import { Divider, Grid, Stack, TablePagination, Skeleton, Box } from '@mui/material';
 import type { ScriptRunDto } from '../../../api/queries/script-run.provider.dto';
 import { ScriptRunsListItem } from './script-runs.list.item';
 import type { Paginated } from 'lam-frontend/api/queries/paginated.provider';
@@ -48,7 +48,7 @@ export function ScriptRunsList({
 
   if (isLoading) {
     return (
-      <Stack gap={2} height="100%">
+      <Stack gap={2} flex="1 1 auto">
         <Grid container spacing={2} flex={1} alignContent="flex-start">
           {[...Array(scriptRuns?.metadata?.limit ?? 10)].map((_, i) => (
             <Grid key={i} size={12}>
@@ -65,20 +65,21 @@ export function ScriptRunsList({
   }
 
   return (
-    <Stack gap={2} height="100%">
-      <Grid container spacing={2} flex={1} alignContent="flex-start">
-        {scriptRuns?.data.map((scriptRun) => (
-          <Grid key={scriptRun.id} size={12}>
-            <ScriptRunsListItem
-              scriptRun={scriptRun}
-              onEdit={onScriptRunEditClick}
-              onDelete={onScriptRunDeleteClick}
-              onCancel={onScriptRunCancelClick}
-            />
-          </Grid>
-        ))}
-      </Grid>
-
+    <Box p={2} height="100%" sx={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Stack gap={2} flex="1 1 auto">
+        <Grid container spacing={2} flex={1} alignContent="flex-start">
+          {scriptRuns?.data.map((scriptRun) => (
+            <Grid key={scriptRun.id} size={12}>
+              <ScriptRunsListItem
+                scriptRun={scriptRun}
+                onEdit={onScriptRunEditClick}
+                onDelete={onScriptRunDeleteClick}
+                onCancel={onScriptRunCancelClick}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Stack>
       <Divider textAlign="right">
         <TablePagination
           component="div"
@@ -95,6 +96,6 @@ export function ScriptRunsList({
           labelRowsPerPage={t('table.rowsPerPage')}
         />
       </Divider>
-    </Stack>
+    </Box>
   );
 }

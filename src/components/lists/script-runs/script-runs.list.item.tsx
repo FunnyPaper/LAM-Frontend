@@ -3,7 +3,7 @@ import type { ScriptRunDto } from '../../../api/queries/script-run.provider.dto'
 import { Delete, Stop, Visibility } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { getStatusColor } from 'lam-frontend/utils/colors';
+import { getRunStatusColor } from 'lam-frontend/utils/colors';
 
 export type ScriptRunsListItemProps = {
   scriptRun: ScriptRunDto;
@@ -20,15 +20,15 @@ export function ScriptRunsListItem({ scriptRun, onEdit, onDelete, onCancel }: Sc
       <CardHeader
         action={
           <Stack direction="row">
-            <IconButton onClick={() => onEdit(scriptRun)}>
+            <IconButton title={t('list.show')} onClick={() => onEdit(scriptRun)}>
               <Visibility />
             </IconButton>
             {scriptRun.status == 'Running' || scriptRun.status == 'Queued' ? (
-              <IconButton onClick={() => onCancel(scriptRun)}>
+              <IconButton title={t('list.stop')} onClick={() => onCancel(scriptRun)}>
                 <Stop />
               </IconButton>
             ) : (
-              <IconButton onClick={() => onDelete(scriptRun)}>
+              <IconButton title={t('list.remove')} onClick={() => onDelete(scriptRun)}>
                 <Delete />
               </IconButton>
             )}
@@ -47,7 +47,7 @@ export function ScriptRunsListItem({ scriptRun, onEdit, onDelete, onCancel }: Sc
                 label={t(`status.${scriptRun.status.toLowerCase()}`)}
                 size="small"
                 variant="outlined"
-                color={getStatusColor(scriptRun.status)}
+                color={getRunStatusColor(scriptRun.status)}
               />
               {scriptRun.createdAt && (
                 <Chip

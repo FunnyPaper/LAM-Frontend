@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, Chip, Collapse, Divider, IconButton, Stack, Typography } from '@mui/material';
 import type { ScriptDto } from '../../../api/queries/script.provider';
-import { AddCircle, Delete, Edit, ExpandLess, ExpandMore } from '@mui/icons-material';
+import { AddCircle, Delete, DynamicFeed, Edit, ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useState } from 'react';
 import type { ScriptVersionDto } from 'lam-frontend/api/queries/script-version.provider';
 import { useTranslation } from 'react-i18next';
@@ -10,11 +10,12 @@ import { format } from 'date-fns';
 
 export type ScriptsListItemProps = {
   script: ScriptDto;
-  onEdit: (data: ScriptDto) => void;
+  onEdit: (data: ScriptDto, lastVersion: ScriptVersionDto) => void;
+  onPreview: (data: ScriptDto) => void;
   onDelete: (data: ScriptDto) => void;
 };
 
-export function ScriptsListItem({ script, onEdit, onDelete }: ScriptsListItemProps) {
+export function ScriptsListItem({ script, onEdit, onPreview, onDelete }: ScriptsListItemProps) {
   const [expand, setExpand] = useState(false);
   const [lastVersion, setLastVersion] = useState<ScriptVersionDto | null>(null);
   const { t } = useTranslation('scripts');
@@ -49,12 +50,17 @@ export function ScriptsListItem({ script, onEdit, onDelete }: ScriptsListItemPro
         action={
           <Stack direction="row">
             {script.description && (
-              <IconButton onClick={() => setExpand((p) => !p)}>{!expand ? <ExpandMore /> : <ExpandLess />}</IconButton>
+              <IconButton title={!expand ? t('list.expand') : t('list.collapse')} onClick={() => setExpand((p) => !p)}>
+                {!expand ? <ExpandMore /> : <ExpandLess />}
+              </IconButton>
             )}
-            <IconButton onClick={() => onEdit(script)}>
+            <IconButton title={t('list.edit')} onClick={() => onEdit(script, lastVersion!)}>
               <Edit />
             </IconButton>
-            <IconButton onClick={() => onDelete(script)}>
+            <IconButton title={t('list.showVersions')} onClick={() => onPreview(script)}>
+              <DynamicFeed />
+            </IconButton>
+            <IconButton title={t('list.remove')} onClick={() => onDelete(script)}>
               <Delete />
             </IconButton>
           </Stack>

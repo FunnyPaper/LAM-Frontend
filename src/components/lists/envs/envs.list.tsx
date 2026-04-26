@@ -1,4 +1,4 @@
-import { Divider, Grid, Stack, TablePagination, Skeleton } from '@mui/material';
+import { Divider, Grid, Stack, TablePagination, Skeleton, Box } from '@mui/material';
 import type { EnvDto } from '../../../api/queries/env.provider';
 import { EnvsListItem } from './envs.list.item';
 import type { Paginated } from 'lam-frontend/api/queries/paginated.provider';
@@ -46,7 +46,7 @@ export function EnvsList({
 
   if (isLoading) {
     return (
-      <Stack gap={2} height="100%">
+      <Stack gap={2}>
         <Grid container spacing={2} flex={1} alignContent="flex-start">
           {[...Array(envs?.metadata?.limit ?? 0)].map((_, i) => (
             <Grid key={i} size={12}>
@@ -63,15 +63,20 @@ export function EnvsList({
   }
 
   return (
-    <Stack gap={2} height="100%">
-      <Grid container spacing={2} flex={1} alignContent="flex-start">
-        {envs?.data.map((env) => (
-          <Grid key={env.id} size={12}>
-            <EnvsListItem env={env} onEdit={onEnvEditClick} onDelete={onEnvDeleteClick} />
-          </Grid>
-        ))}
-      </Grid>
-
+    <Box
+      p={2}
+      height="100%"
+      sx={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2, position: 'relative' }}
+    >
+      <Stack gap={2} flex="1 1 auto">
+        <Grid container spacing={2} flex={1} alignContent="flex-start">
+          {envs?.data.map((env) => (
+            <Grid key={env.id} size={12}>
+              <EnvsListItem env={env} onEdit={onEnvEditClick} onDelete={onEnvDeleteClick} />
+            </Grid>
+          ))}
+        </Grid>
+      </Stack>
       <Divider textAlign="right">
         <TablePagination
           component="div"
@@ -88,6 +93,6 @@ export function EnvsList({
           labelRowsPerPage={t('table.rowsPerPage')}
         />
       </Divider>
-    </Stack>
+    </Box>
   );
 }

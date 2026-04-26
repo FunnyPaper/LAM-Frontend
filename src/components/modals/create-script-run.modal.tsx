@@ -4,23 +4,28 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  Grid,
   IconButton,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  Step,
+  StepLabel,
+  Stepper,
+  stepperClasses,
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Close } from '@mui/icons-material';
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import type { ScriptDto } from '../../api/queries/script.provider';
 import type { EnvDto } from '../../api/queries/env.provider';
 import { ApiProvider } from 'lam-frontend/providers/api.provider';
+import { ScriptsTable, type PaginationParams as ScriptsPaginationParams } from '../tables/script.table';
+import { EnvsTable, type PaginationParams as EnvsPaginationParams } from '../tables/envs.table';
+import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
+import type { ScriptVersionDto } from 'lam-frontend/api';
+import {
+  ScriptsVersionTable,
+  type PaginationParams as ScriptVersionsPaginationParams,
+} from '../tables/script-version.table';
 
 export type CreateScriptRunModalProps = {
   open: boolean;
@@ -28,67 +33,99 @@ export type CreateScriptRunModalProps = {
   onCreate: (data: { envId?: string; scriptVersionId: string }) => void;
 };
 
-// TODO: Split the table inside into distinct component - it can be reusable
+const defaultEnvsSearchParams: EnvsPaginationParams = {
+  page: 0,
+  limit: 10,
+};
+
+const defaultScriptsSearchParams: ScriptsPaginationParams = {
+  page: 0,
+  limit: 10,
+};
+
+const defaultScriptVersionSearchParams: ScriptVersionsPaginationParams = {
+  page: 0,
+  limit: 10,
+};
 
 export function CreateScriptRunModal({ open, onClose, onCreate }: CreateScriptRunModalProps) {
   const { t } = useTranslation('runs');
-  const { script, env } = useContext(ApiProvider)!;
+  const { script, scriptVersion, env } = useContext(ApiProvider)!;
+
+  const [step, setStep] = useState(0);
+
+  const [envsSearchParams, setEnvsSearchParams] = useState<EnvsPaginationParams>(defaultEnvsSearchParams);
+  const [scriptsSearchParams, setScriptsSearchParams] = useState<ScriptsPaginationParams>(defaultScriptsSearchParams);
+  const [scriptVersionsSearchParams, setScriptVersionsSearchParams] = useState<ScriptVersionsPaginationParams>(
+    defaultScriptVersionSearchParams
+  );
 
   const [selectedScript, setSelectedScript] = useState<ScriptDto | null>(null);
   const [selectedEnv, setSelectedEnv] = useState<EnvDto | null>(null);
+  const [selectedScriptVersion, setSelectedScriptVersion] = useState<ScriptVersionDto | null>(null);
 
-  const [scripts, setScripts] = useState<ScriptDto[]>([]);
-  const [envs, setEnvs] = useState<EnvDto[]>([]);
+  const getAllEnvsDataSource = useMemo(() => env.getAll(envsSearchParams), [env, envsSearchParams]);
+  const getAllScriptsDataSource = useMemo(() => script.getAll(scriptsSearchParams), [script, scriptsSearchParams]);
+  const getAllScriptVersionsDataSource = useMemo(
+    () =>
+      selectedScript &&
+      scriptVersion.getAll(selectedScript?.id, {
+        ...scriptVersionsSearchParams,
+        filter: { status: 'Published' },
+        sort: { field: 'versionNumber', order: 'desc' },
+      }),
+    [scriptVersion, scriptVersionsSearchParams, selectedScript]
+  );
 
-  const [scriptsLoading, setScriptsLoading] = useState(true);
-  const [envsLoading, setEnvsLoading] = useState(true);
+  const { data: envs, isLoading: isEnvsLoading } = useDataSourceHook(getAllEnvsDataSource);
+  const { data: scripts, isLoading: isScriptsLoading } = useDataSourceHook(getAllScriptsDataSource);
+  const { data: scriptVersions, isLoading: isScriptVersionsLoading } =
+    useDataSourceHook(getAllScriptVersionsDataSource);
 
-  if (open) {
-    if (scripts.length === 0) {
-      const { subscribe: subscribeScripts } = script.getAll();
-      subscribeScripts((data) => {
-        setScripts(data.data);
-        setScriptsLoading(false);
-      });
+  const completed = useMemo(
+    () => ({
+      0: !!selectedScript,
+      1: !!selectedScriptVersion,
+      2: !!selectedEnv,
+    }),
+    [selectedEnv, selectedScript, selectedScriptVersion]
+  );
+
+  const handleNext = useCallback(() => {
+    let newStep = (step + 1) % 3;
+
+    if (newStep == 1 && !selectedScript) {
+      newStep = (newStep + 1) % 3;
     }
 
-    if (envs.length === 0) {
-      const { subscribe: subscribeEnvs } = env.getAll();
-      subscribeEnvs((data) => {
-        setEnvs(data.data);
-        setEnvsLoading(false);
-      });
-    }
-  }
+    setStep(newStep);
+  }, [selectedScript, step]);
 
-  const handleRun = () => {
-    if (selectedScript) {
+  const handleBack = useCallback(() => {
+    let newStep = (((step - 1) % 3) + 3) % 3;
+
+    if (newStep == 1 && !selectedScript) {
+      newStep = (((newStep - 1) % 3) + 3) % 3;
+    }
+
+    setStep(newStep);
+  }, [selectedScript, step]);
+
+  const handleRun = useCallback(() => {
+    if (selectedScriptVersion) {
       onCreate({
         envId: selectedEnv?.id,
-        scriptVersionId: selectedScript.id,
+        scriptVersionId: selectedScriptVersion.id,
       });
+      setSelectedEnv(null);
+      setSelectedScript(null);
+      setSelectedScriptVersion(null);
       onClose();
     }
-  };
-
-  const handleSelectScript = (script: ScriptDto) => {
-    if (script == selectedScript) {
-      setSelectedScript(null);
-    } else {
-      setSelectedScript(script);
-    }
-  };
-
-  const handleSelectEnv = (env: EnvDto) => {
-    if (env == selectedEnv) {
-      setSelectedEnv(null);
-    } else {
-      setSelectedEnv(env);
-    }
-  };
+  }, [onClose, onCreate, selectedEnv?.id, selectedScriptVersion]);
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth>
+    <Dialog open={open} onClose={onClose}>
       <DialogTitle>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h6">{t('createModal.title')}</Typography>
@@ -98,95 +135,68 @@ export function CreateScriptRunModal({ open, onClose, onCreate }: CreateScriptRu
         </Stack>
       </DialogTitle>
       <Divider />
-      <DialogContent>
-        <Stack gap={2}>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid size={{ xs: 6 }}>
-              <Typography variant="body1" gutterBottom>
-                {t('createModal.scripts')}
-              </Typography>
-              <TableContainer>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>{t('createModal.name')}</TableCell>
-                      <TableCell>{t('createModal.description')}</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {scriptsLoading ? (
-                      <TableRow>
-                        <TableCell colSpan={2}>
-                          <Typography variant="body2">{t('createModal.loading')}</Typography>
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      scripts.map((script) => (
-                        <TableRow
-                          key={script.id}
-                          onClick={() => handleSelectScript(script)}
-                          sx={{
-                            cursor: 'pointer',
-                            backgroundColor: selectedScript?.id === script.id ? 'primary.light' : 'inherit',
-                          }}
-                        >
-                          <TableCell sx={{ color: selectedScript?.id === script.id ? 'primary.dark' : 'inherit' }}>
-                            {script.name}
-                          </TableCell>
-                          <TableCell sx={{ color: selectedScript?.id === script.id ? 'primary.dark' : 'inherit' }}>
-                            {script.description || t('createModal.noDescription')}
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
-            <Grid size={{ xs: 6 }}>
-              <Typography variant="body1" gutterBottom>
-                {t('createModal.environments')}
-              </Typography>
-              <TableContainer>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>{t('createModal.name')}</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {envsLoading ? (
-                      <TableRow>
-                        <TableCell colSpan={1}>
-                          <Typography variant="body2">{t('createModal.loading')}</Typography>
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      envs.map((env) => (
-                        <TableRow
-                          key={env.id}
-                          onClick={() => handleSelectEnv(env)}
-                          sx={{
-                            cursor: 'pointer',
-                            backgroundColor: selectedEnv?.id === env.id ? 'primary.light' : 'inherit',
-                          }}
-                        >
-                          <TableCell sx={{ color: selectedEnv?.id === env.id ? 'primary.dark' : 'inherit' }}>
-                            {env.name}
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
-          </Grid>
-          <Stack direction="row" justifyContent="flex-end">
-            <Button onClick={onClose}>{t('createModal.cancel')}</Button>
-            <Button onClick={handleRun} variant="contained" disabled={!selectedScript}>
-              {t('createModal.run')}
-            </Button>
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', width: 600, height: 400 }}>
+        <Stack gap={2} sx={{ height: '100%' }}>
+          <Stepper nonLinear activeStep={step} sx={{ [`&.${stepperClasses.horizontal}`]: { height: 64 } }}>
+            <Step completed={completed[0]}>
+              <StepLabel>Select script</StepLabel>
+            </Step>
+            <Step completed={completed[1]}>
+              <StepLabel
+                error={!selectedScript}
+                {...(!selectedScript && {
+                  optional: (
+                    <Typography variant="subtitle2" color="error">
+                      First select the script
+                    </Typography>
+                  ),
+                })}
+              >
+                Select version
+              </StepLabel>
+            </Step>
+            <Step completed={completed[2]}>
+              <StepLabel optional>Select env</StepLabel>
+            </Step>
+          </Stepper>
+          {step === 0 && (
+            <ScriptsTable
+              isLoading={isScriptsLoading}
+              scripts={scripts}
+              selectedScript={selectedScript}
+              onSelectScript={setSelectedScript}
+              searchParams={scriptsSearchParams}
+              onSearchParamsChange={setScriptsSearchParams}
+            />
+          )}
+          {step === 1 && (
+            <ScriptsVersionTable
+              isLoading={isScriptVersionsLoading}
+              scriptVersions={scriptVersions}
+              selectedScriptVersion={selectedScriptVersion}
+              onSelectScriptVersion={setSelectedScriptVersion}
+              searchParams={scriptVersionsSearchParams}
+              onSearchParamsChange={setScriptVersionsSearchParams}
+            />
+          )}
+          {step === 2 && (
+            <EnvsTable
+              isLoading={isEnvsLoading}
+              envs={envs}
+              selectedEnv={selectedEnv}
+              onSelectEnv={setSelectedEnv}
+              searchParams={envsSearchParams}
+              onSearchParamsChange={setEnvsSearchParams}
+            />
+          )}
+          <Stack direction="row" justifyContent="space-between">
+            <Button onClick={handleBack}>Back</Button>
+            <Stack direction="row" gap={2}>
+              <Button onClick={handleNext}>Next</Button>
+              <Button onClick={handleRun} variant="contained" disabled={!selectedScriptVersion}>
+                {t('createModal.run')}
+              </Button>
+            </Stack>
           </Stack>
         </Stack>
       </DialogContent>

@@ -11,13 +11,13 @@ export function SettingsPage() {
   const { language, setLanguage } = useLanguageStore();
 
   const handleLanguageChange = (event: React.MouseEvent<HTMLElement>, newLanguages: LanguageType) => {
-    if (newLanguages.length) {
+    if (newLanguages?.length) {
       setLanguage(newLanguages);
     }
   };
 
   const handleModeChange = (event: React.MouseEvent<HTMLElement>, newModes: ThemeMode) => {
-    if (newModes.length) {
+    if (newModes?.length) {
       setThemeMode(newModes);
     }
   };

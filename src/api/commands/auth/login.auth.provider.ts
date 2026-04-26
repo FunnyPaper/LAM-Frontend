@@ -1,6 +1,6 @@
 export type LoginDto = {
-  email: string,
-  password: string
-}
+  username: string;
+  password: string;
+};
 
-export type LoginAuthProvider = (data: LoginDto) => Promise<void>
+export type LoginAuthProvider = (data: LoginDto) => Promise<void>;

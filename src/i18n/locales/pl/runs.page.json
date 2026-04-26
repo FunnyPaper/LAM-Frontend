@@ -23,12 +23,6 @@
   },
   "createModal": {
     "title": "Utwórz uruchomienie skryptu",
-    "scripts": "Skrypty",
-    "environments": "Środowiska",
-    "name": "Nazwa",
-    "description": "Opis",
-    "noDescription": "Brak opisu",
-    "loading": "Ładowanie...",
     "cancel": "Anuluj",
     "run": "Uruchom"
   },
@@ -73,5 +67,10 @@
   "table": {
     "displayedRows": "Strona",
     "rowsPerPage": "Limit"
+  },
+  "list": {
+    "show": "Zobacz szczegóły",
+    "remove": "Usuń",
+    "stop": "Zatrzymaj"
   }
 }

@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Stack, Typography } from '@mui/material';
+import { AppBar, Button, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { EnvDrawer } from '../../components/drawers/env.drawer';
 import { type PaginationParams, EnvsList } from '../../components/lists/envs/envs.list';
@@ -33,7 +33,6 @@ export function EnvsPage() {
 
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openEditDrawer, setOpenEditDrawer] = useState(false);
-  const [openRemoveConfirmModal, setOpenRemoveConfirmModal] = useState(false);
   const [selectedEnv, setSelectedEnv] = useState<EnvDto | null>(null);
   const [searchParams, setSearchParams] = useState<EnvSearchParams & PaginationParams>(defaultSearchParams);
   const [debouncedName] = useDebounce(searchParams.filter?.name, 300);
@@ -47,20 +46,17 @@ export function EnvsPage() {
 
   const handleRemove = (env: EnvDto) => {
     setSelectedEnv(env);
-    setOpenRemoveConfirmModal(true);
   };
 
   const handleConfirmRemove = async () => {
     if (!selectedEnv) return;
     await remove(selectedEnv.id);
-    setOpenRemoveConfirmModal(false);
     setOpenEditDrawer(false);
     setSelectedEnv(null);
     invalidateEnv();
   };
 
   const handleCancelRemove = () => {
-    setOpenRemoveConfirmModal(false);
     setSelectedEnv(null);
     setOpenEditDrawer(false);
   };
@@ -73,7 +69,7 @@ export function EnvsPage() {
   };
 
   return (
-    <Stack height="100%">
+    <Stack height="100%" sx={{ overflowX: 'hidden' }}>
       <AppBar
         position="relative"
         sx={{
@@ -99,52 +95,49 @@ export function EnvsPage() {
           />
         </Stack>
       </AppBar>
-      <Box p={2} height="100%">
-        {selectedEnv && (
-          <EnvDrawer<CreateEnvDto>
-            open={openEditDrawer}
-            env={selectedEnv}
-            onSubmit={(data) => {
-              update(selectedEnv.id, data);
-              invalidateEnv();
-            }}
-            onRemove={handleRemove}
-            onClose={() => setOpenEditDrawer(false)}
-          />
-        )}
-        <Box component="div" height="100%">
-          <EnvsList
-            onEnvEditClick={(data) => {
-              setSelectedEnv(data);
-              setOpenEditDrawer(true);
-            }}
-            onEnvDeleteClick={handleRemove}
-            onPaginationParamsChange={handleParamsChange}
-            searchParams={searchParams}
-            envs={envs}
-            isLoading={isEnvsLoading}
-          />
-
-          <CreateEnvModal
-            open={openCreateModal}
-            onClose={() => setOpenCreateModal(false)}
-            onCreate={(data) => {
-              create(data);
-              invalidateEnv();
-            }}
-          />
-        </Box>
-        <ConfirmModal
-          open={openRemoveConfirmModal}
-          title={t('confirm.delete.title')}
-          content={t('confirm.delete.content')}
-          onConfirm={handleConfirmRemove}
-          onCancel={handleCancelRemove}
-          confirmButtonText={t('confirm.delete.confirm')}
-          cancelButtonText={t('confirm.delete.cancel')}
-          confirmButtonColor="error"
+      {selectedEnv && (
+        <EnvDrawer<CreateEnvDto>
+          open={openEditDrawer}
+          env={selectedEnv}
+          onSubmit={(data) => {
+            update(selectedEnv.id, data);
+            setOpenEditDrawer(false);
+            invalidateEnv();
+          }}
+          onRemove={handleRemove}
+          onClose={() => setOpenEditDrawer(false)}
         />
-      </Box>
+      )}
+      <EnvsList
+        onEnvEditClick={(data) => {
+          setSelectedEnv(data);
+          setOpenEditDrawer(true);
+        }}
+        onEnvDeleteClick={handleRemove}
+        onPaginationParamsChange={handleParamsChange}
+        searchParams={searchParams}
+        envs={envs}
+        isLoading={isEnvsLoading}
+      />
+      <CreateEnvModal
+        open={openCreateModal}
+        onClose={() => setOpenCreateModal(false)}
+        onCreate={async (data) => {
+          await create(data);
+          setOpenCreateModal(false);
+          invalidateEnv();
+        }}
+      />
+      <ConfirmModal
+        open={!!selectedEnv}
+        title={t('confirm.delete.title')}
+        content={t('confirm.delete.content')}
+        onConfirm={handleConfirmRemove}
+        onCancel={handleCancelRemove}
+        confirmButtonText={t('confirm.delete.confirm')}
+        cancelButtonText={t('confirm.delete.cancel')}
+        confirmButtonColor="error"
+      />
     </Stack>
   );
 }

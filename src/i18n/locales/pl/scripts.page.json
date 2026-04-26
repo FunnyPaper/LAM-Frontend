@@ -36,6 +36,44 @@
     "update": {
       "title": "Zapisz skrypt"
     },
+    "preview": {
+      "title": "Wersje skryptu",
+      "backToList": "Powrót do listy wersji",
+      "viewContent": {
+        "title": "Zobacz zawartość wersji"
+      },
+      "fork": {
+        "title": "Rozwidl wersję",
+        "info": "Tworzy nową wersję roboczą na podstawie wybranej wersji i ustawia wszystkie poprzednie wersje robocze jako zarchiwizowane. Jednocześnie można prezentować tylko jedną wersję roboczą.",
+        "confirm": "Potwierdź"
+      },
+      "edit": {
+        "title": "Zedytuj wersję",
+        "info": "Otwiera edytor skryptów w celu dalszych modyfikacji treści. W zależności od statusu wersji, nowy fork może zostać utworzony automatycznie przy pierwszym zapisie dla wersji opublikowanych i zarchiwizowanych. Forki nie są tworzone, jeśli wersja jest wersją roboczą, w którym to przypadku jej zawartość jest zastępowana podczas operacji zapisu.",
+        "confirm": "Potwierdź"
+      },
+      "publish": {
+        "title": "Opublikuj wersję",
+        "info": "Umożliwia uruchomienie wersji, ale nie pozwala na jej późniejszą edycję. Można jedynie archiwizować lub rozwidlać opublikowaną wersję.",
+        "confirm": "Potwierdź",
+        "name": "Nazwa",
+        "validation": {
+          "required": "To pole jest wymagane",
+          "minLength": "To pole wymaga minimalnie {{num}} znaków",
+          "maxLength": "To pole wymaga maksymalnie {{num}} znaków"
+        }
+      },
+      "archive": {
+        "title": "Zarchiwizuj wersję",
+        "info": "Zmienia status wersji na zarchiwizowaną. Wersji zarchiwizowanych nie można używać do uruchamiania skryptów ani ich edytować. Można rozwidlić lub opublikować wersję do dalszych operacji.",
+        "confirm": "Potwierdź"
+      },
+      "delete": {
+        "title": "Usuń wersję",
+        "info": "Usuwa wersję na stałe bez możliwości jej przywrócenia. W przypadku uruchomienia skryptu metadane dotyczące wersji można zachować jedynie jako migawkę tylko do odczytu.",
+        "confirm": "Potwierdź"
+      }
+    },
     "name": "Nazwa",
     "description": "Opis",
     "save": "Zapisz",
@@ -48,7 +86,12 @@
     "saveAs": "Zapisz jako",
     "envVariables": "Zmienne środowiskowe",
     "upload": "Wgraj",
-    "download": "Pobierz"
+    "download": "Pobierz",
+    "publish": "Opublikuj",
+    "archive": "Zarchiwizuj",
+    "warning": {
+      "nonDraftEdit": "Edytujesz wesję roboczą. Operacja zapisu stworzy nową wersję roboczą zamiast nadpisywać obecną."
+    }
   },
   "version": {
     "status": {
@@ -59,7 +102,21 @@
   },
   "table": {
     "displayedRows": "Strona",
-    "rowsPerPage": "Limit"
+    "rowsPerPage": "Limit",
+    "header": "Skrypty",
+    "name": "Nazwa",
+    "description": "Opis",
+    "noDescription": "Brak opisu",
+    "loading": "Ładowanie...",
+    "status": "Status",
+    "createdAt": "Stworzono"
+  },
+  "list": {
+    "edit": "Zedytuj",
+    "remove": "Usuń",
+    "expand": "Rozwiń",
+    "collapse": "Zwiń",
+    "showVersions": "Pokaż wersje"
   },
   "notFound": "Skryptu nie znaleziono"
 }

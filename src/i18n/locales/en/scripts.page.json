@@ -36,6 +36,44 @@
     "update": {
       "title": "Update Script"
     },
+    "preview": {
+      "title": "Script versions",
+      "backToList": "Back to versions list",
+      "viewContent": {
+        "title": "View version content"
+      },
+      "fork": {
+        "title": "Fork version",
+        "info": "Creates a new draft version from the selected version and sets all prior drafts version to archived. Only one draft can be presented at a time.",
+        "confirm": "Confirm"
+      },
+      "edit": {
+        "title": "Edit version",
+        "info": "Opens script editor for further content modifications. Depending on the version status, new fork can be created automatically on first save for published and archived versions. No forks are performed if version is a draft in which case it's content is replaced during save operations.",
+        "confirm": "Confirm"
+      },
+      "publish": {
+        "title": "Publish version",
+        "info": "Makes version eligible for running operation but cannot be freely edited afterwards. You'll be only able to archive or fork published version.",
+        "confirm": "Confirm",
+        "name": "Name",
+        "validation": {
+          "required": "This field is required",
+          "minLength": "This field requires minimum {{num}} characters",
+          "maxLength": "This field requires maximum {{num}} characters"
+        }
+      },
+      "archive": {
+        "title": "Archive version",
+        "info": "Changes version status to archived. Archived versions cannot be used for script runs nor they can be edited. You can either fork or publish the version for further operations.",
+        "confirm": "Confirm"
+      },
+      "delete": {
+        "title": "Delete version",
+        "info": "Removes version permanently without any option to restore. In case of script runs, metadata about version can be preserved only as a readonly snapshot.",
+        "confirm": "Confirm"
+      }
+    },
     "name": "Name",
     "description": "Description",
     "save": "Save",
@@ -48,7 +86,12 @@
     "saveAs": "Save as",
     "envVariables": "Environment variables",
     "upload": "Upload",
-    "download": "Download"
+    "download": "Download",
+    "publish": "Publish",
+    "archive": "Archived",
+    "warning": {
+      "nonDraftEdit": "You are editing a non draft version. Save will create a new version instead of editing the current one."
+    }
   },
   "version": {
     "status": {
@@ -59,7 +102,21 @@
   },
   "table": {
     "displayedRows": "Page",
-    "rowsPerPage": "Limit"
+    "rowsPerPage": "Limit",
+    "header": "Scripts",
+    "name": "Name",
+    "description": "Description",
+    "noDescription": "No description",
+    "loading": "Loading...",
+    "status": "Status",
+    "createdAt": "Created At"
+  },
+  "list": {
+    "edit": "Edit",
+    "remove": "Remove",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "showVersions": "Show versions"
   },
   "notFound": "Script not found"
 }

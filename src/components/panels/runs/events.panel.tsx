@@ -2,7 +2,7 @@ import { Card, CardHeader, CardContent, Box, Typography, Chip } from '@mui/mater
 import { format } from 'date-fns';
 import type { ScriptRunEventDto } from 'lam-frontend/api/queries/script-run-event.provider.dto';
 import type { ScriptRunStatus } from 'lam-frontend/api/queries/script-run.provider.dto';
-import { getStatusColor } from 'lam-frontend/utils/colors';
+import { getRunStatusColor } from 'lam-frontend/utils/colors';
 
 export type EventsPanelProps = {
   truncated: boolean;
@@ -47,7 +47,7 @@ export function EventsPanel({ truncated, events, labels }: EventsPanelProps) {
                     label={labels[event.status.toLowerCase() as Lowercase<ScriptRunStatus>]}
                     size="small"
                     variant="outlined"
-                    color={getStatusColor(event.status)}
+                    color={getRunStatusColor(event.status)}
                   />
                 )}
                 {event.type === 'log' && (

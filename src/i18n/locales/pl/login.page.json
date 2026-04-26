@@ -2,7 +2,7 @@
   "header": "Logowanie",
   "form": {
     "fields": {
-      "email": "Email",
+      "username": "Nazwa użytkownika",
       "password": "Hasło",
       "login": "Zaloguj"
     },
@@ -10,7 +10,7 @@
       "required": "{{field}} jest wymagane",
       "minLength": "Minimalnie {{length}} znaków",
       "pattern": {
-        "email": "Niepoprawny adres email"
+        "username": "Niepoprawna nazwa użytkownika"
       },
       "credentials": "Nieprawidłowe dane logowania",
       "strongPassword": "Hasło jest za słabe"

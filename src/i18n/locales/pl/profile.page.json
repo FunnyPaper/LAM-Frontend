@@ -3,20 +3,25 @@
   "form": {
     "fields": {
       "details": "Detale",
-      "email": "Email",
+      "username": "Nazwa użytkownika",
+      "password": "Hasło",
       "update": "Zaktualizuj",
-      "reset": "Zresetuj"
+      "reset": "Zresetuj",
+      "logout": "Wyloguj"
     },
     "validation": {
       "required": "{{field}} jest wymagane",
       "minLength": "Minimalnie {{length}} znaków",
       "pattern": {
-        "email": "Niepoprawny adres email"
+        "username": "Niepoprawna nazwa użytkownika"
       },
-      "credentials": "Nieprawidłowe dane logowania"
+      "credentials": "Nieprawidłowe dane logowania",
+      "strongPassword": "Hasło jest za słabe"
     },
     "tooltip": {
-      "restore": "Przywróć domyślną wartość"
+      "restore": "Przywróć domyślną wartość",
+      "showPassword": "Pokaż hasło",
+      "hidePassword": "Ukryj hasło"
     }
   }
 }

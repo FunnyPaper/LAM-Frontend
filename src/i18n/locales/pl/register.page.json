@@ -2,15 +2,16 @@
   "header": "Rejestrowanie",
   "form": {
     "fields": {
-      "email": "Email",
+      "username": "Nazwa użytkownika",
       "password": "Hasło",
+      "confirmPassword": "Powtórz Hasło",
       "login": "Zarejestruj"
     },
     "validation": {
       "required": "{{field}} jest wymagane",
       "minLength": "Minimalnie {{length}} znaków",
       "pattern": {
-        "email": "Niepoprawny adres email"
+        "username": "Niepoprawna nazwa użytkownika"
       },
       "credentials": "Nieprawidłowe dane rejestrowania",
       "strongPassword": "Hasło jest za słabe"

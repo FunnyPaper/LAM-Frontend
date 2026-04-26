@@ -23,12 +23,6 @@
   },
   "createModal": {
     "title": "Create Script Run",
-    "scripts": "Scripts",
-    "environments": "Environments",
-    "name": "Name",
-    "description": "Description",
-    "noDescription": "No description",
-    "loading": "Loading...",
     "cancel": "Cancel",
     "run": "Run"
   },
@@ -73,5 +67,10 @@
   "table": {
     "displayedRows": "Page",
     "rowsPerPage": "Limit"
+  },
+  "list": {
+    "show": "See details",
+    "remove": "Remove",
+    "stop": "Stop"
   }
 }

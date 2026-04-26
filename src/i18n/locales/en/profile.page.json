@@ -3,20 +3,25 @@
   "form": {
     "fields": {
       "details": "Details",
-      "email": "Email",
+      "username": "Username",
+      "password": "Password",
       "update": "Update",
-      "reset": "Reset"
+      "reset": "Reset",
+      "logout": "Logout"
     },
     "validation": {
       "required": "{{field}} is required",
       "minLength": "Minimum {{length}} characters",
       "pattern": {
-        "email": "Invalid email address"
+        "username": "Invalid username"
       },
-      "credentials": "Invalid credentials"
+      "credentials": "Invalid credentials",
+      "strongPassword": "Not a strong password"
     },
     "tooltip": {
-      "restore": "Restore default value"
+      "restore": "Restore default value",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
     }
   }
 }

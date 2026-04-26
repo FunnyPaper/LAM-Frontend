@@ -8,6 +8,7 @@ export function useScriptVersionResourceHook(): ScriptVersionResource {
     create: createScriptVersion,
     fork: forkScriptVersion,
     publish: publishScriptVersion,
+    archive: archiveScriptVersion,
     remove: removeScriptVersion,
     update: updateScriptVersion,
   } = scriptVersionStore();
@@ -18,6 +19,7 @@ export function useScriptVersionResourceHook(): ScriptVersionResource {
     create: createScriptVersion,
     fork: forkScriptVersion,
     publish: publishScriptVersion,
+    archive: archiveScriptVersion,
     remove: removeScriptVersion,
     update: updateScriptVersion,
   };

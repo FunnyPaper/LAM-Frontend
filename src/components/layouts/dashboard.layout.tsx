@@ -181,7 +181,7 @@ export function DashboardLayout() {
           </List>
         </Stack>
       </Drawer>
-      <Box component="main" width="100%" height="100%">
+      <Box component="main" minWidth={0} height="100%" width="100%">
         <Outlet />
       </Box>
     </Box>

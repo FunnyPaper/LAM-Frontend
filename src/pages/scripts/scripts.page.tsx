@@ -1,9 +1,10 @@
+
 import { useTranslation } from 'react-i18next';
-import { AppBar, Box, Button, Skeleton, Stack, Typography } from '@mui/material';
+import { AppBar, Button, Stack, Typography } from '@mui/material';
 import { type PaginationParams, ScriptsList } from '../../components/lists/scripts/scripts.list';
 import { ConfirmModal } from '../../components/modals/confirm.modal';
 import { type ScriptSearchParams, ScriptsSearchBar } from '../../components/searchbars/scripts.searchbar';
-import { Suspense, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useContext, useState } from 'react';
 import { ApiProvider } from '../../providers/api.provider';
 import type { ScriptDto } from '../../api/queries/script.provider';
@@ -13,6 +14,7 @@ import type { CreateScriptDto } from '../../api/commands/script/create.script.pr
 import { useNavigate } from 'react-router';
 import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
 import { useDebounce } from 'use-debounce';
+import { PreviewScriptModal } from 'lam-frontend/components/modals/preview-script.modal';
 
 const defaultSearchParams: ScriptSearchParams & PaginationParams = {
   page: 0,
@@ -30,11 +32,14 @@ export function ScriptsPage() {
   const { t } = useTranslation('scripts');
   const {
     script: { getAll, remove, create },
+    scriptVersion: { archive, publish, fork, remove: removeVersion },
   } = useContext(ApiProvider)!;
   const navigate = useNavigate();
 
   const [openRemoveConfirmModal, setOpenRemoveConfirmModal] = useState(false);
   const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [previewScript, setPreviewScript] = useState<ScriptDto | null>(null);
+
   const [selectedScript, setSelectedScript] = useState<ScriptDto | null>(null);
   const [searchParams, setSearchParams] = useState<ScriptSearchParams & PaginationParams>(defaultSearchParams);
   const [debouncedName] = useDebounce(searchParams.filter?.name, 300);
@@ -85,7 +90,7 @@ export function ScriptsPage() {
   };
 
   return (
-    <Stack height="100%">
+    <Stack height="100%" sx={{ overflowX: 'hidden' }}>
       <AppBar
         position="relative"
         sx={{
@@ -112,35 +117,46 @@ export function ScriptsPage() {
           />
         </Stack>
       </AppBar>
-      <Box p={2} height="100%">
-        <Box component="div" height="100%">
-          <Suspense fallback={<Skeleton />}>
-            <ScriptsList
-              onScriptEditClick={(data) => navigate(`/scripts/${data.id}`)}
-              onScriptDeleteClick={handleRemove}
-              onPaginationParamsChange={handleSearchParamsChanged}
-              searchParams={searchParams}
-              scripts={scripts}
-              isLoading={isScriptsLoading}
-            />
-          </Suspense>
-        </Box>
-        <ConfirmModal
-          open={openRemoveConfirmModal}
-          title={t('confirm.delete.title')}
-          content={t('confirm.delete.content')}
-          onConfirm={handleConfirmRemove}
-          onCancel={handleCancelRemove}
-          confirmButtonText={t('confirm.delete.confirm')}
-          cancelButtonText={t('confirm.delete.cancel')}
-          confirmButtonColor="error"
-        />
-        <CreateScriptModal
-          open={openCreateModal}
-          onClose={() => setOpenCreateModal(false)}
-          onCreate={handleCreateScript}
-        />
-      </Box>
+      <ScriptsList
+        onScriptEditClick={(data, lastVersion) => {
+            if(lastVersion) {
+                navigate(`/scripts/${data.id}?version=${lastVersion.id}`)
+            } else {
+                navigate(`/scripts/${data.id}`)
+            }
+        }}
+        onScriptPreviewClick={(data) => setPreviewScript(data)}
+        onScriptDeleteClick={handleRemove}
+        onPaginationParamsChange={handleSearchParamsChanged}
+        searchParams={searchParams}
+        scripts={scripts}
+        isLoading={isScriptsLoading}
+      />
+      <CreateScriptModal
+        open={openCreateModal}
+        onClose={() => setOpenCreateModal(false)}
+        onCreate={handleCreateScript}
+      />
+      <PreviewScriptModal
+        open={!!previewScript}
+        onClose={() => setPreviewScript(null)}
+        script={previewScript!}
+        onRemove={(scriptVersion) => removeVersion(previewScript!.id, scriptVersion.id)}
+        onEdit={(scriptVersion) => navigate(`/scripts/${previewScript!.id}?version=${scriptVersion.id}`)}
+        onFork={(scriptVersion) => fork(previewScript!.id, scriptVersion.id)}
+        onArchive={(scriptVersion) => archive(previewScript!.id, scriptVersion.id)}
+        onPublish={(scriptVersion, data) => publish(previewScript!.id, scriptVersion.id, data)}
+      />
+      <ConfirmModal
+        open={openRemoveConfirmModal}
+        title={t('confirm.delete.title')}
+        content={t('confirm.delete.content')}
+        onConfirm={handleConfirmRemove}
+        onCancel={handleCancelRemove}
+        confirmButtonText={t('confirm.delete.confirm')}
+        cancelButtonText={t('confirm.delete.cancel')}
+        confirmButtonColor="error"
+      />
     </Stack>
   );
 }

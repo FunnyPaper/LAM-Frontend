@@ -26,17 +26,21 @@ export type ScriptSourceDto = {
 
 export type ScriptVersionDto = {
   id: string;
+  name?: string;
   content: ScriptContentDto;
   source: ScriptSourceDto;
   versionNumber: number;
   status: ScriptVersionStatus;
   createdAt: string;
+  updatedAt: string;
 }
 
 export type ScriptVersionSnapshotDto = {
+  name?: string;
   status: ScriptVersionStatus;
   versionNumber: number;
   createdAt: string;
+  updatedAt: string;
   content: ScriptContentDto;
   source: ScriptSourceDto;
 }
@@ -45,11 +49,12 @@ export type GetScriptVersionsProviderParams = {
   page?: number;
   limit?: number;
   filter?: {
+    status: ScriptVersionStatus;
     format?: ScriptSourceFormat;
     engineVersion?: number;
   };
   sort?: {
-    field?: 'versionNumber' | 'status' | 'createdAt' | 'updatedAt' | 'sourceFormat' | 'engineVersion' | 'astVersion';
+    field?: 'versionNumber' | 'status' | 'createdAt' | 'updatedAt';
     order?: 'asc' | 'desc';
   };
 }

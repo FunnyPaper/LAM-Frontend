@@ -30,7 +30,7 @@ import { ScriptRunGeneralInfoPanel } from 'lam-frontend/components/panels/runs/s
 import { ScriptVersionSnapshotPanel } from 'lam-frontend/components/panels/runs/script-version-snapshot.panel';
 import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
 import { ScriptVersionStatuses, type ScriptVersionStatus } from 'lam-frontend/api/queries/script-version.provider';
-import { getStatusColor } from 'lam-frontend/utils/colors';
+import { getRunStatusColor } from 'lam-frontend/utils/colors';
 
 export function RunsDetailsPage() {
   const { t: tRuns } = useTranslation('runs');
@@ -55,7 +55,9 @@ export function RunsDetailsPage() {
   } = useDataSourceHook(scriptRunResource);
 
   const scriptRunEventResource = useMemo(() => scriptRunEvent.getOne(id!), [id, scriptRunEvent]);
-  const { data: scriptRunEventData, invalidate: invalidateScriptRunEvent } = useDataSourceHook(scriptRunEventResource, { enabled: isRunning });
+  const { data: scriptRunEventData, invalidate: invalidateScriptRunEvent } = useDataSourceHook(scriptRunEventResource, {
+    enabled: isRunning,
+  });
   useEffect(() => {
     if (!scriptRunEventData) return;
 
@@ -159,7 +161,7 @@ export function RunsDetailsPage() {
               label={tRuns(`status.${currentStatus.toLowerCase()}`)}
               size="small"
               variant="outlined"
-              color={getStatusColor(currentStatus)}
+              color={getRunStatusColor(currentStatus)}
             />
           </Stack>
           <Box sx={{ flexGrow: 1 }} />

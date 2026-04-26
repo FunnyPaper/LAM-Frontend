@@ -42,6 +42,15 @@
   },
   "table": {
     "displayedRows": "Strona",
-    "rowsPerPage": "Limit"
+    "rowsPerPage": "Limit",
+    "header": "Środowiska",
+    "name": "Nazwa",
+    "loading": "Ładowanie..."
+  },
+  "list": {
+    "edit": "Zedytuj",
+    "remove": "Usuń",
+    "expand": "Rozwiń",
+    "collapse": "Zwiń"
   }
 }

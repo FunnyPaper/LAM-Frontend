@@ -9,7 +9,7 @@ type UserStoreState = {
 };
 
 export const userStore = create<UserStoreState>((set, store) => ({
-  state: { email: 'email' },
+  state: { username: 'User123' },
   update: async (data: UpdateUserDto) => set({ state: data as UserDto }),
   me: () => ({
     subscribe: (listener) => {

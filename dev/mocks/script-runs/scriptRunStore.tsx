@@ -29,6 +29,7 @@ export const scriptRunStore = create<ScriptRunState>((set, store) => ({
         status: 'Draft',
         versionNumber: 1,
         createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2023-01-01T00:00:00Z',
         content: {
           astJson: {},
           astVersion: 1,
@@ -137,7 +138,8 @@ export const scriptRunStore = create<ScriptRunState>((set, store) => ({
         scriptVersionSnapshot: {
           status: 'Draft',
           versionNumber: 0,
-          createdAt: '',
+          createdAt: '2023-01-01T00:00:00Z',
+          updatedAt: '2023-01-01T00:00:00Z',
           content: {
             astJson: {},
             astVersion: 0,

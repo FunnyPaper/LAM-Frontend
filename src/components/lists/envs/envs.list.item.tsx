@@ -14,6 +14,7 @@ import type { EnvDto } from '../../../api/queries/env.provider';
 import { AddCircle, Delete, Edit, ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useState } from 'react';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 export type EnvsListItemProps = {
   env: EnvDto;
@@ -22,20 +23,24 @@ export type EnvsListItemProps = {
 };
 
 export function EnvsListItem({ env, onEdit, onDelete }: EnvsListItemProps) {
+  const { t } = useTranslation('envs');
   const [expand, setExpand] = useState(false);
+  const renderCollapse = env.description || env.data;
 
   return (
     <Card>
       <CardHeader
         action={
           <Stack direction="row">
-            {env.description && (
-              <IconButton onClick={() => setExpand((p) => !p)}>{!expand ? <ExpandMore /> : <ExpandLess />}</IconButton>
+            {renderCollapse && (
+              <IconButton title={!expand ? t('list.expand') : t('list.collapse')} onClick={() => setExpand((p) => !p)}>
+                {!expand ? <ExpandMore /> : <ExpandLess />}
+              </IconButton>
             )}
-            <IconButton onClick={() => onEdit(env)}>
+            <IconButton title={t('list.edit')} onClick={() => onEdit(env)}>
               <Edit />
             </IconButton>
-            <IconButton onClick={() => onDelete(env)}>
+            <IconButton title={t('list.remove')} onClick={() => onDelete(env)}>
               <Delete />
             </IconButton>
           </Stack>

@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Stack, Typography } from '@mui/material';
+import { AppBar, Button, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useContext, useMemo, useState } from 'react';
 import { ApiProvider } from '../../providers/api.provider';
@@ -111,34 +111,30 @@ export function RunsPage() {
           />
         </Stack>
       </AppBar>
-      <Box p={2} height="100%">
-        <Box component="div" height="100%">
-          <ScriptRunsList
-            onScriptRunEditClick={(data) => navigate(`/runs/${data.id}`)}
-            onScriptRunDeleteClick={handleRemove}
-            onScriptRunCancelClick={handleCancel}
-            onPaginationParamsChange={handleSearchParamsChanged}
-            searchParams={searchParams}
-            scriptRuns={scriptRunData}
-            isLoading={isScriptRunLoading}
-          />
-        </Box>
-        <ConfirmModal
-          open={openRemoveConfirmModal}
-          title={t('confirm.delete.title')}
-          content={t('confirm.delete.content')}
-          onConfirm={handleConfirmRemove}
-          onCancel={handleCancelRemove}
-          confirmButtonText={t('confirm.delete.confirm')}
-          cancelButtonText={t('confirm.delete.cancel')}
-          confirmButtonColor="error"
-        />
-        <CreateScriptRunModal
-          open={openCreateModal}
-          onClose={() => setOpenCreateModal(false)}
-          onCreate={handleCreateScriptRun}
-        />
-      </Box>
+      <ScriptRunsList
+        onScriptRunEditClick={(data) => navigate(`/runs/${data.id}`)}
+        onScriptRunDeleteClick={handleRemove}
+        onScriptRunCancelClick={handleCancel}
+        onPaginationParamsChange={handleSearchParamsChanged}
+        searchParams={searchParams}
+        scriptRuns={scriptRunData}
+        isLoading={isScriptRunLoading}
+      />
+      <CreateScriptRunModal
+        open={openCreateModal}
+        onClose={() => setOpenCreateModal(false)}
+        onCreate={handleCreateScriptRun}
+      />
+      <ConfirmModal
+        open={openRemoveConfirmModal}
+        title={t('confirm.delete.title')}
+        content={t('confirm.delete.content')}
+        onConfirm={handleConfirmRemove}
+        onCancel={handleCancelRemove}
+        confirmButtonText={t('confirm.delete.confirm')}
+        cancelButtonText={t('confirm.delete.cancel')}
+        confirmButtonColor="error"
+      />
     </Stack>
   );
 }

@@ -2,15 +2,16 @@
   "header": "Register",
   "form": {
     "fields": {
-      "email": "Email",
+      "username": "Username",
       "password": "Password",
+      "confirmPassword": "Confirm Password",
       "login": "Register"
     },
     "validation": {
       "required": "{{field}} is required",
       "minLength": "Minimum {{length}} characters",
       "pattern": {
-        "email": "Invalid email address"
+        "username": "Invalid username"
       },
       "credentials": "Invalid credentials",
       "strongPassword": "Not a strong password"

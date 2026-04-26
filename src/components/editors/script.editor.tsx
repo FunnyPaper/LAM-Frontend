@@ -1,5 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Box, Typography, IconButton, useTheme, LinearProgress, Stack } from '@mui/material';
+import {
+    Box,
+    IconButton,
+    useTheme,
+    LinearProgress,
+    Stack,
+    Tooltip,
+    TextField,
+    outlinedInputClasses,
+    Chip,
+} from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import Editor, { type OnMount } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
@@ -10,23 +20,39 @@ import { z } from 'zod';
 import { validateSkippingVars } from 'lam-frontend/utils/schema-validation';
 import { downloadFile } from 'lam-frontend/utils/download-file';
 import type { UpdateScriptDto } from 'lam-frontend/api/commands/script/update.script.provider';
-import { SaveAs } from '@mui/icons-material';
+import { Archive, Publish, SaveAs, Warning } from '@mui/icons-material';
 import { EditScriptModal } from '../modals/edit-script.modal';
 import type { ScriptDto } from 'lam-frontend/api/queries/script.provider';
+import type { ScriptVersionDto } from 'lam-frontend/api';
+import { useForm, useWatch } from 'react-hook-form';
+import { getScriptVersionStateColor } from 'lam-frontend/utils/colors';
 
 export type ScriptEditorProps = {
   script: ScriptDto;
+  scriptVersion?: ScriptVersionDto;
   format: 'json';
   initialContent?: string;
-  onSave?: (content: Record<string, unknown>) => void;
-  onSaveAs?: (content: Record<string, unknown>, data: UpdateScriptDto) => void;
+  onSave: (content: Record<string, unknown>) => void;
+  onSaveAs: (content: Record<string, unknown>, data: UpdateScriptDto) => void;
+  onPublish: (script: ScriptDto, version: ScriptVersionDto, data: { name: string }) => void;
+  onArchive: (script: ScriptDto, version: ScriptVersionDto) => void;
   schema?: z.ZodType;
 };
 
 // TODO: Update state update for validation
 // it should be treated as a derived state I think (left in effects because it was easier to write at the moment :') )
 
-export function ScriptEditor({ script, format, initialContent = '{}', onSave, onSaveAs, schema }: ScriptEditorProps) {
+export function ScriptEditor({
+  script,
+  scriptVersion,
+  format,
+  initialContent = '{}',
+  onSave,
+  onSaveAs,
+  onPublish,
+  onArchive,
+  schema,
+}: ScriptEditorProps) {
   const { t } = useTranslation('scripts');
   const [content, setContent] = useState<string>(initialContent);
   const [isValid, setIsValid] = useState<boolean>(true);
@@ -37,6 +63,11 @@ export function ScriptEditor({ script, format, initialContent = '{}', onSave, on
   const envDecorationsRef = useRef<string[]>([]);
   const zodDecorationsRef = useRef<string[]>([]);
   const theme = useTheme();
+
+  const { control, register } = useForm<{ name: string }>({
+    defaultValues: { name: scriptVersion?.name ?? script.name },
+  });
+  const name = useWatch({ control, name: 'name' });
 
   const handleSave = () => {
     if (isValid && onSave) {
@@ -245,17 +276,41 @@ export function ScriptEditor({ script, format, initialContent = '{}', onSave, on
         <Box
           sx={{
             backgroundColor: 'paper',
-            p: 1,
             borderBottom: '1px solid #ccc',
             position: 'relative',
           }}
         >
           <Stack direction="row" justifyContent="space-between" alignItems="center" width="100%">
-            <Typography variant="caption">
-              {script.name}.{format}
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <IconButton size="small" title={t('editor.upload')} component="label">
+            <Stack direction="row" flex={1} alignItems="center">
+              {scriptVersion && scriptVersion.status != 'Draft' && initialContent != content && (
+                <Tooltip title={t('editor.warning.nonDraftEdit')}>
+                  <Box sx={{ padding: '5px', display: 'inline-flex', color: 'warning.dark' }}>
+                    <Warning />
+                  </Box>
+                </Tooltip>
+              )}
+              <TextField
+                {...register('name')}
+                sx={{
+                  [`& .${outlinedInputClasses.root}`]: {
+                    fontSize: '0.8rem',
+                    borderRadius: 0,
+                  },
+                  [`& .${outlinedInputClasses.input}`]: {
+                    px: 2,
+                    py: 1,
+                  },
+                }}
+              />
+              <Chip
+                label={t(`version.status.${(scriptVersion?.status ?? 'Draft').toLowerCase()}`)}
+                size="small"
+                variant="filled"
+                color={getScriptVersionStateColor(scriptVersion?.status ?? 'Draft')}
+              />
+            </Stack>
+            <Box sx={{ display: 'flex', flex: 0 }}>
+              <IconButton size="small" title={t('editor.upload')} component="label" sx={{ borderRadius: 0 }}>
                 <input type="file" hidden onChange={handleUpload} accept=".json,application/json" />
                 <FileUploadIcon />
               </IconButton>
@@ -263,6 +318,7 @@ export function ScriptEditor({ script, format, initialContent = '{}', onSave, on
                 size="small"
                 onClick={() => downloadFile(content, `${name}.${format}`)}
                 title={t('editor.download')}
+                sx={{ borderRadius: 0 }}
               >
                 <DownloadIcon />
               </IconButton>
@@ -270,8 +326,9 @@ export function ScriptEditor({ script, format, initialContent = '{}', onSave, on
                 color="primary"
                 size="small"
                 onClick={handleSave}
-                disabled={!isValid || saving}
+                disabled={!isValid || saving || initialContent === content}
                 title={t('editor.save')}
+                sx={{ borderRadius: 0 }}
               >
                 <SaveIcon />
               </IconButton>
@@ -279,11 +336,32 @@ export function ScriptEditor({ script, format, initialContent = '{}', onSave, on
                 color="primary"
                 size="small"
                 onClick={() => setIsSaveAsOpen(true)}
-                disabled={!isValid || saving}
+                disabled={!isValid || saving || initialContent === content}
                 title={t('editor.saveAs')}
+                sx={{ borderRadius: 0 }}
               >
                 <SaveAs />
               </IconButton>
+              {scriptVersion && scriptVersion.status != 'Published' && (
+                <IconButton
+                  sx={{ borderRadius: 0 }}
+                  size="small"
+                  title={t('editor.publish')}
+                  onClick={() => onPublish(script, scriptVersion, { name })}
+                >
+                  <Publish />
+                </IconButton>
+              )}
+              {scriptVersion && scriptVersion.status != 'Archived' && (
+                <IconButton
+                  sx={{ borderRadius: 0 }}
+                  size="small"
+                  title={t('editor.archive')}
+                  onClick={() => onArchive(script, scriptVersion)}
+                >
+                  <Archive />
+                </IconButton>
+              )}
             </Box>
           </Stack>
           {saving && (

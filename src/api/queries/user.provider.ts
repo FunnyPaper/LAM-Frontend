@@ -1,7 +1,7 @@
-import type { DataSource } from "../resources/datasource";
+import type { DataSource } from '../resources/datasource';
 
 export type UserDto = {
-  email: string
-}
+  username: string;
+};
 
-export type GetMeUserProvider = () => DataSource<UserDto>
+export type GetMeUserProvider = () => DataSource<UserDto>;

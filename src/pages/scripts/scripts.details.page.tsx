@@ -1,14 +1,14 @@
 import {
-  Typography,
-  Box,
-  Button,
-  Stack,
-  AppBar,
-  ToggleButton,
-  ToggleButtonGroup,
-  CircularProgress,
+    Typography,
+    Box,
+    Button,
+    Stack,
+    AppBar,
+    ToggleButton,
+    ToggleButtonGroup,
+    CircularProgress,
 } from '@mui/material';
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useState, useContext, useMemo } from 'react';
 import { ApiProvider } from '../../providers/api.provider';
@@ -24,11 +24,18 @@ import type { UpdateScriptDto } from 'lam-frontend/api/commands/script/update.sc
 export function ScriptsDetailsPage() {
   const { t } = useTranslation('scripts');
   const { id } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const {
     script: { getOne: getOneScript, remove: removeScript, update: updateScript },
-    scriptVersion: { getAll: getScriptVersion, update: updateScriptVersion, create: createScriptVersion },
+    scriptVersion: {
+      getOne: getScriptVersion,
+      update: updateScriptVersion,
+      create: createScriptVersion,
+      archive: archiveScriptVersion,
+      publish: publishScriptVersion,
+    },
     script: { getJsonSchema },
   } = useContext(ApiProvider)!;
 
@@ -47,23 +54,19 @@ export function ScriptsDetailsPage() {
     invalidate: invalidateScript,
   } = useDataSourceHook(scriptDataSource);
 
-  const scriptVersionDataSource = useMemo(
-    () =>
-      getScriptVersion(id!, {
-        limit: 1,
-        sort: { field: 'createdAt', order: 'desc' },
-      }),
-    [id, getScriptVersion]
-  );
+  const scriptVersionDataSource = useMemo(() => {
+    const versionId = searchParams.get('version');
+    return (versionId && getScriptVersion(id!, versionId)) || null;
+  }, [searchParams, id, getScriptVersion]);
+
   const { data: scriptVersionData, invalidate: invalidateScriptVersion } = useDataSourceHook(scriptVersionDataSource);
 
   const handleSaveScript = useCallback(
     async (content: Record<string, unknown>) => {
-      if (!scriptData || !scriptVersionData) return;
+      if (!scriptData) return;
 
-      // If there's no script version created, create one - it can be treated as a dumb optimization for now
-      // (no script versions are created until users decides to write a first version - it follows the user intuition behind the scene)
-      if (scriptVersionData?.metadata.totalItems == 0) {
+      // If there's no script version created or the version is not draft, create a new version
+      if (!scriptVersionData || scriptVersionData.status != 'Draft') {
         await createScriptVersion(id!, {
           content: {
             astJson: content,
@@ -76,11 +79,12 @@ export function ScriptsDetailsPage() {
           },
         });
       } else {
-        await updateScriptVersion(scriptData.id, scriptVersionData.data[0].id, {
+        // Update version only if it is draft.
+        await updateScriptVersion(id!, scriptVersionData.id, {
           content: {
             astJson: content,
-            ...scriptVersionData.data[0].content,
-            engineVersion: 1,
+            astVersion: scriptVersionData.content.astVersion,
+            engineVersion: scriptVersionData.content.engineVersion,
           },
           source: { content: JSON.stringify(content, null, 2), format: 'json' },
         });
@@ -179,8 +183,11 @@ export function ScriptsDetailsPage() {
         ) : (
           <ScriptEditor
             script={scriptData}
-            format={scriptVersionData?.data?.[0].source.format || 'json'}
-            initialContent={scriptVersionData?.data?.[0].source?.content || '{}'}
+            scriptVersion={scriptVersionData}
+            format={scriptVersionData?.source.format || 'json'}
+            initialContent={scriptVersionData?.source?.content || '{}'}
+            onArchive={(script, version) => archiveScriptVersion(script.id, version.id)}
+            onPublish={(script, version, data) => publishScriptVersion(script.id, version.id, data)}
             onSave={handleSaveScript}
             onSaveAs={handleSaveAsScript}
             schema={zodSchema}
