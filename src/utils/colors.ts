@@ -10,6 +10,8 @@ export const getRunStatusColor = (status: string) => {
             return 'error';
         case 'Cancelled':
             return 'default';
+        case 'Cancelling':
+            return 'default';
         default:
             return 'default';
     }

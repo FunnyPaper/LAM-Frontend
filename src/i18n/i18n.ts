@@ -1,9 +1,14 @@
-import i18n from 'i18next';
+import i18n, { type ResourceLanguage } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import enTranslations from './locales/en/translation';
 import plTranslations from './locales/pl/translation';
+import { deepMerge } from 'lam-frontend/utils/deep-merge';
 
-export function initTranslations() {
+export type InitTranslationOptions = {
+  additionalResources?: Record<string, ResourceLanguage>
+}
+
+export function initTranslations({ additionalResources = {} } : InitTranslationOptions) {
     let lang: string;
 
     try {
@@ -12,11 +17,16 @@ export function initTranslations() {
         lang = 'en';
     }
 
-    i18n.use(initReactI18next).init({
-        resources: {
+    const resources = deepMerge(
+      {
             en: enTranslations,
             pl: plTranslations
-        },
+      },
+      additionalResources
+    ) as Record<string, ResourceLanguage>;
+
+    i18n.use(initReactI18next).init({
+        resources: resources,
         lng: lang,
         fallbackLng: 'en',
         interpolation: {

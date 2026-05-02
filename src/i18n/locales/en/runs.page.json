@@ -62,7 +62,8 @@
     "running": "Running",
     "succeeded": "Succeeded",
     "failed": "Failed",
-    "cancelled": "Cancelled"
+    "cancelled": "Cancelled",
+    "cancelling": "Cancelling"
   },
   "table": {
     "displayedRows": "Page",

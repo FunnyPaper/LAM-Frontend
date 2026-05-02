@@ -22,27 +22,23 @@ export function ScriptsListItem({ script, onEdit, onPreview, onDelete }: Scripts
   const { scriptVersion } = useContext(ApiProvider)!;
 
   useEffect(() => {
-    if (scriptVersion && script.id) {
-      const { subscribe } = scriptVersion.getAll(script.id, {
-        page: 0,
-        limit: 1,
-        sort: {
-          field: 'createdAt',
-          order: 'desc',
-        },
-      });
+    const { subscribe } = scriptVersion.getAll(script.id, {
+      page: 0,
+      limit: 1,
+      sort: {
+        field: 'updatedAt',
+        order: 'desc',
+      },
+    });
 
-      const unsubscribe = subscribe((data) => {
-        if (data.data.length > 0) {
-          setLastVersion(data.data[0]);
-        } else {
-          setLastVersion(null);
-        }
-      });
+    const unsubscribe = subscribe((data) => {
+      if (data.data.length > 0) {
+        setLastVersion(data.data[0]);
+      }
+    });
 
-      return unsubscribe;
-    }
-  }, [script.id, scriptVersion]);
+    return unsubscribe;
+  }, [script, scriptVersion]);
 
   return (
     <Card>

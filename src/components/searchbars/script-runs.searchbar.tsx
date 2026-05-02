@@ -1,13 +1,12 @@
-import { ArrowDownward, ArrowUpward, Search } from '@mui/icons-material';
+import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import {
-  Button,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
   Stack,
   ToggleButton,
-  ToggleButtonGroup,
+  ToggleButtonGroup
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ScriptRunStatuses } from 'lam-frontend/api/queries/script-run.provider.dto';
@@ -23,12 +22,11 @@ export type ScriptRunSearchParams = {
 };
 
 export type ScriptRunsSearchBarProps = {
-  onSearch: () => void;
   searchParams: ScriptRunSearchParams;
   onSearchParamsChanged: (params: Partial<ScriptRunSearchParams>) => void;
 };
 
-export function ScriptRunsSearchBar({ onSearch, searchParams, onSearchParamsChanged }: ScriptRunsSearchBarProps) {
+export function ScriptRunsSearchBar({ searchParams, onSearchParamsChanged }: ScriptRunsSearchBarProps) {
   const { t } = useTranslation('runs');
 
   return (
@@ -89,15 +87,6 @@ export function ScriptRunsSearchBar({ onSearch, searchParams, onSearchParamsChan
           <ArrowDownward />
         </ToggleButton>
       </ToggleButtonGroup>
-
-      <Button
-        onClick={onSearch}
-        variant="outlined"
-        size="small"
-        sx={{ minWidth: '40px', height: '40px', alignSelf: 'center' }}
-      >
-        <Search />
-      </Button>
     </Stack>
   );
 }

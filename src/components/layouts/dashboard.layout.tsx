@@ -13,6 +13,7 @@ import {
   type Theme,
   type CSSObject,
   Stack,
+  drawerClasses,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -135,7 +136,15 @@ export function DashboardLayout() {
   return (
     <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
       <CssBaseline />
-      <Drawer variant="permanent" open={open}>
+      <Drawer
+        variant="permanent"
+        open={open}
+        sx={{
+          position: 'relative',
+          [`& .${drawerClasses.paper}`]: {
+            position: 'absolute'
+          }
+        }}>
         <Stack>
           <DrawerHeader open={open}>
             <IconButton onClick={() => setOpen((open) => !open)}>

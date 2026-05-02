@@ -168,7 +168,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => setShowConfirmPassword((prev) => !prev)}
                       >
-                        {showConfirmPassword ? <VisibilityOff /> : <Visibility fontSize="small" />}
+                        {!showConfirmPassword ? <VisibilityOff /> : <Visibility fontSize="small" />}
                       </IconButton>
                     </Tooltip>
                   </InputAdornment>

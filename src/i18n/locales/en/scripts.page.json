@@ -109,7 +109,8 @@
     "noDescription": "No description",
     "loading": "Loading...",
     "status": "Status",
-    "createdAt": "Created At"
+    "createdAt": "Created At",
+    "updatedAt": "Updated At"
   },
   "list": {
     "edit": "Edit",

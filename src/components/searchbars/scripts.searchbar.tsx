@@ -1,6 +1,5 @@
-import { ArrowDownward, ArrowUpward, Search } from '@mui/icons-material';
+import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import {
-  Button,
   FormControl,
   InputLabel,
   MenuItem,
@@ -8,7 +7,7 @@ import {
   Stack,
   TextField,
   ToggleButton,
-  ToggleButtonGroup,
+  ToggleButtonGroup
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
@@ -23,12 +22,11 @@ export type ScriptSearchParams = {
 };
 
 export type ScriptsSearchBarProps = {
-  onSearch: () => void;
   searchParams: ScriptSearchParams;
   onSearchParamsChanged: (params: Partial<ScriptSearchParams>) => void;
 };
 
-export function ScriptsSearchBar({ onSearch, searchParams, onSearchParamsChanged }: ScriptsSearchBarProps) {
+export function ScriptsSearchBar({ searchParams, onSearchParamsChanged }: ScriptsSearchBarProps) {
   const { t } = useTranslation('scripts');
 
   return (
@@ -43,7 +41,6 @@ export function ScriptsSearchBar({ onSearch, searchParams, onSearchParamsChanged
             filter: { ...searchParams.filter, name: e.target.value },
           })
         }
-        onKeyDown={(e) => e.key === 'Enter' && onSearch()}
       />
 
       <FormControl fullWidth sx={{ maxWidth: 200 }}>
@@ -77,15 +74,6 @@ export function ScriptsSearchBar({ onSearch, searchParams, onSearchParamsChanged
           <ArrowDownward />
         </ToggleButton>
       </ToggleButtonGroup>
-
-      <Button
-        onClick={onSearch}
-        variant="outlined"
-        size="small"
-        sx={{ minWidth: '40px', height: '40px', alignSelf: 'center' }}
-      >
-        <Search />
-      </Button>
     </Stack>
   );
 }

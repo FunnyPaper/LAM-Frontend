@@ -43,10 +43,15 @@ export function RunsDetailsPage() {
 
   const [scriptRunEvents, setScriptRunEvents] = useState<ScriptRunEventDto[]>([]);
   const [resultData, setResultData] = useState<ScriptRunResultDto>();
-  const [isRunning, setIsRunning] = useState(false);
   const [currentStatus, setCurrentStatus] = useState<ScriptRunStatus>('Unknown');
 
+  const isRunning = currentStatus === 'Running' || currentStatus === 'Queued' || currentStatus == 'Cancelling';
+  const isFinished = currentStatus === 'Succeeded' || currentStatus === 'Failed' || currentStatus === 'Cancelled';
+
+  const limitedEvents = useMemo(() => scriptRunEvents.slice(-100), [scriptRunEvents]);
   const scriptRunResource = useMemo(() => scriptRun.getOne(id!), [id, scriptRun]);
+  const scriptRunEventResource = useMemo(() => scriptRunEvent.getOne(id!), [id, scriptRunEvent]);
+
   const {
     data: scriptRunData,
     isLoading: isScriptRunLoading,
@@ -54,10 +59,21 @@ export function RunsDetailsPage() {
     invalidate: invalidateScriptRun,
   } = useDataSourceHook(scriptRunResource);
 
-  const scriptRunEventResource = useMemo(() => scriptRunEvent.getOne(id!), [id, scriptRunEvent]);
-  const { data: scriptRunEventData, invalidate: invalidateScriptRunEvent } = useDataSourceHook(scriptRunEventResource, {
-    enabled: isRunning,
-  });
+  const { 
+    data: scriptRunEventData, 
+    invalidate: invalidateScriptRunEvent 
+  } = useDataSourceHook(scriptRunEventResource, { enabled: isRunning });
+
+  useEffect(() => {
+    if (scriptRunEventData) {
+      if (scriptRunEventData.type == 'status') {
+        setCurrentStatus(scriptRunEventData.status);
+      }
+    } else if(scriptRunData) {
+      setCurrentStatus(scriptRunData?.status);
+    }
+  }, [scriptRunData, scriptRunEventData, setCurrentStatus]);
+
   useEffect(() => {
     if (!scriptRunEventData) return;
 
@@ -65,55 +81,37 @@ export function RunsDetailsPage() {
   }, [setScriptRunEvents, scriptRunEventData]);
 
   useEffect(() => {
-    if (scriptRunData?.result) {
+    if (scriptRunEventData) {
+      if (scriptRunEventData.type == 'resultUpdate') {
+        if (scriptRunEventData.change.type == 'partial') {
+          setResultData((prev) => {
+            return { ...prev, data: [...prev!.data!, ...scriptRunEventData.change.data] };
+          });
+        } else if (scriptRunEventData.change.type == 'full') {
+          setResultData((prev) => {
+            return { ...prev, data: scriptRunEventData.change.data };
+          });
+        }
+      }
+    } else if (scriptRunData?.result) {
       setResultData(scriptRunData.result);
     }
-  }, [setResultData, scriptRunData?.result]);
+  }, [scriptRunData, scriptRunEventData, setResultData]);
 
-  useEffect(() => {
-    if (scriptRunEventData?.type == 'resultUpdate') {
-      if (scriptRunEventData.change.type == 'partial') {
-        setResultData((prev) => {
-          if (!prev) return scriptRunEventData.change.data;
-          return { ...prev, data: { ...prev.data, ...scriptRunEventData.change.data } };
-        });
-      } else if (scriptRunEventData.change.type == 'full') {
-        setResultData((prev) => {
-          if (!prev) return scriptRunEventData.change.data;
-          return { ...prev, data: scriptRunEventData.change.data };
-        });
-      }
-    }
-  }, [scriptRunEventData, setResultData]);
-
-  useEffect(() => {
-    if (scriptRunData) {
-      setCurrentStatus(scriptRunData?.status);
-      setIsRunning(scriptRunData?.status === 'Running' || scriptRunData?.status === 'Queued');
-    }
-  }, [scriptRunData, setCurrentStatus, setIsRunning]);
-
-  useEffect(() => {
-    if (scriptRunEventData?.type == 'status') {
-      setCurrentStatus(scriptRunEventData.status);
-      setIsRunning(scriptRunEventData.status === 'Running' || scriptRunEventData.status === 'Queued');
-    }
-  }, [scriptRunEventData, setCurrentStatus, setIsRunning]);
-
-  const limitedEvents = useMemo(() => scriptRunEvents.slice(-100), [scriptRunEvents]);
+  
   const handleBackToList = useCallback(() => navigate('/runs', { replace: true }), [navigate]);
 
-  const handleStop = async () => {
+  const handleStop = useCallback(async () => {
     await scriptRun.cancel(id!);
 
     invalidateScriptRunEvent();
     invalidateScriptRun();
-  };
+  }, [id, invalidateScriptRun, invalidateScriptRunEvent, scriptRun]);
 
-  const handleRemove = async () => {
+  const handleRemove = useCallback(async () => {
     await scriptRun.remove(id!);
     handleBackToList();
-  };
+  }, [handleBackToList, id, scriptRun]);
 
   if (isScriptRunLoading) {
     return <CircularProgress />;
@@ -131,10 +129,6 @@ export function RunsDetailsPage() {
       </Box>
     );
   }
-
-  const isFinished =
-    ScriptRunStatuses.includes(currentStatus) &&
-    (currentStatus === 'Succeeded' || currentStatus === 'Failed' || currentStatus === 'Cancelled');
 
   return (
     <Box height="100%" display="flex" flexDirection="column">
@@ -166,12 +160,21 @@ export function RunsDetailsPage() {
           </Stack>
           <Box sx={{ flexGrow: 1 }} />
           {isRunning && (
-            <Button variant="outlined" color="secondary" startIcon={<Stop />} onClick={handleStop}>
+            <Button 
+              variant="outlined" 
+              color="secondary" 
+              startIcon={<Stop />} 
+              onClick={handleStop} 
+              disabled={currentStatus === 'Cancelling'}>
               {tRuns('details.stop')}
             </Button>
           )}
           {isFinished && (
-            <Button variant="outlined" color="error" startIcon={<Delete />} onClick={handleRemove}>
+            <Button 
+              variant="outlined" 
+              color="error" 
+              startIcon={<Delete />} 
+              onClick={handleRemove}>
               {tRuns('details.remove')}
             </Button>
           )}

@@ -105,7 +105,6 @@ export function RunsPage() {
             <Add />
           </Button>
           <ScriptRunsSearchBar
-            onSearch={() => setSearchParams(searchParams)}
             searchParams={searchParams}
             onSearchParamsChanged={handleSearchParamsChanged}
           />

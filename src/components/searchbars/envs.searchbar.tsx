@@ -23,12 +23,11 @@ export type EnvSearchParams = {
 };
 
 export type EnvsSearchBarProps = {
-  onSearch: () => void;
   searchParams: EnvSearchParams;
   onSearchParamsChanged: (params: Partial<EnvSearchParams>) => void;
 };
 
-export function EnvsSearchBar({ onSearch, searchParams, onSearchParamsChanged }: EnvsSearchBarProps) {
+export function EnvsSearchBar({ searchParams, onSearchParamsChanged }: EnvsSearchBarProps) {
   const { t } = useTranslation('envs');
 
   return (
@@ -43,7 +42,6 @@ export function EnvsSearchBar({ onSearch, searchParams, onSearchParamsChanged }:
             filter: { ...searchParams.filter, name: e.target.value },
           })
         }
-        onKeyDown={(e) => e.key === 'Enter' && onSearch()}
       />
 
       <FormControl fullWidth sx={{ maxWidth: 200 }}>
@@ -77,15 +75,6 @@ export function EnvsSearchBar({ onSearch, searchParams, onSearchParamsChanged }:
           <ArrowDownward />
         </ToggleButton>
       </ToggleButtonGroup>
-
-      <Button
-        onClick={onSearch}
-        variant="outlined"
-        size="small"
-        sx={{ minWidth: '40px', height: '40px', alignSelf: 'center' }}
-      >
-        <Search />
-      </Button>
     </Stack>
   );
 }

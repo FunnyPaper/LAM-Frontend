@@ -10,7 +10,7 @@ export type ScriptRunEventDto = {
   type: 'resultUpdate',
   change: {
     type: 'partial' | 'full',
-    data: Record<string, unknown>
+    data: Record<string, unknown>[]
   }
 } | {
   type: 'log',

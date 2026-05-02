@@ -1,25 +1,26 @@
 import {
-    Typography,
-    Box,
-    Button,
-    Stack,
-    AppBar,
-    ToggleButton,
-    ToggleButtonGroup,
-    CircularProgress,
+  Typography,
+  Box,
+  Button,
+  Stack,
+  AppBar,
+  ToggleButton,
+  ToggleButtonGroup,
+  CircularProgress,
 } from '@mui/material';
 import { useParams, useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useState, useContext, useMemo } from 'react';
 import { ApiProvider } from '../../providers/api.provider';
 import { ArrowBack, Delete, Description, Polyline } from '@mui/icons-material';
-import { ScriptEditor } from '../../components/editors/script.editor';
 import '@xyflow/react/dist/style.css';
 import { ConfirmModal } from 'lam-frontend/components/modals/confirm.modal';
 import { z } from 'zod';
 import { ScriptFlow } from 'lam-frontend/components/flow/script.flow';
 import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
 import type { UpdateScriptDto } from 'lam-frontend/api/commands/script/update.script.provider';
+import type { PublishScriptVersionDto, ScriptDto, ScriptVersionDto } from 'lam-frontend/api';
+import { ScriptEditor } from 'lam-frontend/components/editors/script.editor';
 
 export function ScriptsDetailsPage() {
   const { t } = useTranslation('scripts');
@@ -67,7 +68,7 @@ export function ScriptsDetailsPage() {
 
       // If there's no script version created or the version is not draft, create a new version
       if (!scriptVersionData || scriptVersionData.status != 'Draft') {
-        await createScriptVersion(id!, {
+        const { id: newId } = await createScriptVersion(id!, {
           content: {
             astJson: content,
             astVersion: 1,
@@ -78,6 +79,10 @@ export function ScriptsDetailsPage() {
             content: JSON.stringify(content, null, 2),
           },
         });
+
+        // We want to work on newly created version. 
+        // Otherwise each save operation will try to create a new version instead of updating the previous one.
+        setSearchParams((prev) => (prev.set('version', newId), prev));
       } else {
         // Update version only if it is draft.
         await updateScriptVersion(id!, scriptVersionData.id, {
@@ -88,11 +93,11 @@ export function ScriptsDetailsPage() {
           },
           source: { content: JSON.stringify(content, null, 2), format: 'json' },
         });
-      }
 
-      invalidateScriptVersion();
+        invalidateScriptVersion();
+      }
     },
-    [createScriptVersion, id, invalidateScriptVersion, scriptData, scriptVersionData, updateScriptVersion]
+    [createScriptVersion, id, invalidateScriptVersion, scriptData, scriptVersionData, updateScriptVersion, setSearchParams]
   );
 
   const handleSaveAsScript = useCallback(
@@ -101,10 +106,22 @@ export function ScriptsDetailsPage() {
 
       await updateScript(id!, data);
       invalidateScript();
+
       await handleSaveScript(content);
+      invalidateScriptVersion();
     },
-    [handleSaveScript, id, invalidateScript, scriptData, updateScript]
+    [handleSaveScript, id, invalidateScript, invalidateScriptVersion, scriptData, updateScript]
   );
+
+  const handlePublish = useCallback(async (script: ScriptDto, version: ScriptVersionDto, data: PublishScriptVersionDto) => {
+    await publishScriptVersion(script.id, version.id, data);
+    invalidateScriptVersion();
+  }, [invalidateScriptVersion, publishScriptVersion]);
+
+  const handleArchive = useCallback(async (script: ScriptDto, version: ScriptVersionDto) => {
+    await archiveScriptVersion(script.id, version.id);
+    invalidateScriptVersion();
+  }, [archiveScriptVersion, invalidateScriptVersion])
 
   const handleRemove = useCallback(() => setOpenRemoveConfirmModal(true), [setOpenRemoveConfirmModal]);
 
@@ -178,21 +195,21 @@ export function ScriptsDetailsPage() {
         </Stack>
       </AppBar>
       <Box p={2} height="100%">
-        {viewMode === 'flow' ? (
-          <ScriptFlow />
-        ) : (
+        {(!scriptVersionData || !zodSchema) && <CircularProgress /> }
+        {scriptVersionData && viewMode === 'flow' && <ScriptFlow />}
+        {scriptVersionData && viewMode === 'editor' && zodSchema &&         
           <ScriptEditor
             script={scriptData}
             scriptVersion={scriptVersionData}
             format={scriptVersionData?.source.format || 'json'}
             initialContent={scriptVersionData?.source?.content || '{}'}
-            onArchive={(script, version) => archiveScriptVersion(script.id, version.id)}
-            onPublish={(script, version, data) => publishScriptVersion(script.id, version.id, data)}
+            onArchive={handleArchive}
+            onPublish={handlePublish}
             onSave={handleSaveScript}
             onSaveAs={handleSaveAsScript}
             schema={zodSchema}
           />
-        )}
+        }
       </Box>
       <ConfirmModal
         open={openRemoveConfirmModal}

@@ -109,7 +109,8 @@
     "noDescription": "Brak opisu",
     "loading": "Ładowanie...",
     "status": "Status",
-    "createdAt": "Stworzono"
+    "createdAt": "Stworzono",
+    "updatedAt": "Zaktualizowano"
   },
   "list": {
     "edit": "Zedytuj",

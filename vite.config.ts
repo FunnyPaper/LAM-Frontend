@@ -27,6 +27,8 @@ export default defineConfig({
         },
         rollupOptions: {
             external: [
+                "i18next",
+                "react-i18next",
                 'react', 
                 'react-dom',
                 "@mui/icons-material",

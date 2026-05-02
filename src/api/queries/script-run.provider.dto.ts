@@ -3,12 +3,12 @@ import type { EnvSnapshotDto } from "./env.provider";
 import type { Paginated } from "./paginated.provider";
 import type { ScriptVersionSnapshotDto } from "./script-version.provider";
 
-export const ScriptRunStatuses = ['Unknown', 'Queued', 'Running', 'Succeeded', 'Failed', 'Cancelled'] as const;
+export const ScriptRunStatuses = ['Unknown', 'Queued', 'Running', 'Succeeded', 'Failed', 'Cancelled', 'Cancelling'] as const;
 
 export type ScriptRunStatus = typeof ScriptRunStatuses[number];
 
 export type ScriptRunResultDto = {
-  data?: Record<string, unknown>
+  data?: Record<string, unknown>[]
   createdAt?: string;
   updatedAt?: string;
 }

@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
-    Box,
-    IconButton,
-    useTheme,
-    LinearProgress,
-    Stack,
-    Tooltip,
-    TextField,
-    outlinedInputClasses,
-    Chip,
+  Box,
+  IconButton,
+  useTheme,
+  LinearProgress,
+  Stack,
+  Tooltip,
+  TextField,
+  outlinedInputClasses,
+  Chip,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import Editor, { type OnMount } from '@monaco-editor/react';
@@ -54,14 +54,21 @@ export function ScriptEditor({
   schema,
 }: ScriptEditorProps) {
   const { t } = useTranslation('scripts');
+
+  // TODO: There are too many states at the moment
+  // Split into smaller components / hooks in the meantime
   const [content, setContent] = useState<string>(initialContent);
   const [isValid, setIsValid] = useState<boolean>(true);
   const [isSaveAsOpen, setIsSaveAsOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savingProgress, setSavingProgress] = useState(0);
+  const [isEdited, setIsEdited] = useState(false);
+
+  const saveButtonRef = useRef<HTMLButtonElement>(null);
   const editorRef = useRef<Parameters<OnMount>[0]>(null);
   const envDecorationsRef = useRef<string[]>([]);
   const zodDecorationsRef = useRef<string[]>([]);
+
   const theme = useTheme();
 
   const { control, register } = useForm<{ name: string }>({
@@ -69,31 +76,31 @@ export function ScriptEditor({
   });
   const name = useWatch({ control, name: 'name' });
 
-  const handleSave = () => {
-    if (isValid && onSave) {
+  const handleSave = useCallback(() => {
+    if (isValid && onSave && editorRef.current) {
       setSaving(true);
       try {
-        onSave(JSON.parse(content));
+        onSave(JSON.parse(editorRef.current.getValue()));
       } catch {
         onSave(JSON.parse(initialContent));
       }
     }
-  };
+  }, [initialContent, isValid, onSave]);
 
-  const handleSaveAs = (data: UpdateScriptDto) => {
-    if (isValid && onSaveAs) {
+  const handleSaveAs = useCallback((data: UpdateScriptDto) => {
+    if (isValid && onSaveAs && editorRef.current) {
       setSaving(true);
       try {
-        onSaveAs(JSON.parse(content), data);
+        onSaveAs(JSON.parse(editorRef.current.getValue()), data);
       } catch {
         onSaveAs(JSON.parse(initialContent), data);
       } finally {
         setIsSaveAsOpen(false);
       }
     }
-  };
+  }, [initialContent, isValid, onSaveAs]);
 
-  const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type === 'application/json') {
       const reader = new FileReader();
@@ -105,30 +112,13 @@ export function ScriptEditor({
     }
 
     event.target.value = '';
-  };
+  }, []);
 
-  const handleEditorDidMount: OnMount = (editor, monaco) => {
-    editorRef.current = editor;
-    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, handleSave);
-    monaco.json.jsonDefaults.setDiagnosticsOptions({
-      validate: true,
-      schemas: [
-        {
-          uri: 'lam-json',
-          fileMatch: ['*'],
-          schema: schema?.toJSONSchema(),
-        },
-      ],
-    });
-    updateZodMarkers(content);
-    updateEnvMarkers(content);
-  };
-
-  const handleContentChange = (value: string | undefined) => {
+  const handleContentChange = useCallback((value: string | undefined) => {
     if (value !== undefined) {
       setContent(value);
     }
-  };
+  }, []);
 
   const updateEnvMarkers = useCallback((content: string) => {
     if (editorRef.current) {
@@ -226,13 +216,35 @@ export function ScriptEditor({
     [setIsValid, schema]
   );
 
-  useEffect(() => {
+  const handleEditorDidMount: OnMount = useCallback((editor, monaco) => {
+    editorRef.current = editor;
+    editor.addAction({
+      id: 'save-action',
+      label: "Save",
+      keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+      run: () => saveButtonRef.current?.click()
+    });
+    editor.onDidChangeModelContent(() => {
+      setIsEdited(prev => prev || true);
+    });
+    monaco.json.jsonDefaults.setDiagnosticsOptions({
+      validate: true,
+      schemas: [
+        {
+          uri: 'lam-json',
+          fileMatch: ['*'],
+          schema: schema?.toJSONSchema(),
+        },
+      ],
+    });
     updateZodMarkers(content);
-  }, [content, updateZodMarkers]);
+    updateEnvMarkers(content);
+  }, [content, schema, updateEnvMarkers, updateZodMarkers]);
 
   useEffect(() => {
+    updateZodMarkers(content);
     updateEnvMarkers(content);
-  }, [content, updateEnvMarkers]);
+  }, [content, updateZodMarkers, updateEnvMarkers]);
 
   useEffect(() => {
     if (!saving) return;
@@ -282,7 +294,7 @@ export function ScriptEditor({
         >
           <Stack direction="row" justifyContent="space-between" alignItems="center" width="100%">
             <Stack direction="row" flex={1} alignItems="center">
-              {scriptVersion && scriptVersion.status != 'Draft' && initialContent != content && (
+              {(scriptVersion?.status !== 'Draft' && isEdited) && (
                 <Tooltip title={t('editor.warning.nonDraftEdit')}>
                   <Box sx={{ padding: '5px', display: 'inline-flex', color: 'warning.dark' }}>
                     <Warning />
@@ -323,6 +335,7 @@ export function ScriptEditor({
                 <DownloadIcon />
               </IconButton>
               <IconButton
+                ref={saveButtonRef}
                 color="primary"
                 size="small"
                 onClick={handleSave}

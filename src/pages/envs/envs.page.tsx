@@ -32,6 +32,7 @@ export function EnvsPage() {
   } = useContext(ApiProvider)!;
 
   const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [openEditDrawer, setOpenEditDrawer] = useState(false);
   const [selectedEnv, setSelectedEnv] = useState<EnvDto | null>(null);
   const [searchParams, setSearchParams] = useState<EnvSearchParams & PaginationParams>(defaultSearchParams);
@@ -46,12 +47,14 @@ export function EnvsPage() {
 
   const handleRemove = (env: EnvDto) => {
     setSelectedEnv(env);
+    setOpenConfirmModal(true);
   };
 
   const handleConfirmRemove = async () => {
     if (!selectedEnv) return;
     await remove(selectedEnv.id);
     setOpenEditDrawer(false);
+    setOpenConfirmModal(false);
     setSelectedEnv(null);
     invalidateEnv();
   };
@@ -89,7 +92,6 @@ export function EnvsPage() {
             <Add />
           </Button>
           <EnvsSearchBar
-            onSearch={() => setSearchParams(searchParams)}
             searchParams={searchParams}
             onSearchParamsChanged={handleParamsChange}
           />
@@ -129,7 +131,7 @@ export function EnvsPage() {
         }}
       />
       <ConfirmModal
-        open={!!selectedEnv}
+        open={openConfirmModal}
         title={t('confirm.delete.title')}
         content={t('confirm.delete.content')}
         onConfirm={handleConfirmRemove}

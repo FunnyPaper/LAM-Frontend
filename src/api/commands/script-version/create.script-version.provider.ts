@@ -17,4 +17,4 @@ export type CreateScriptVersionDto = {
   source: CreateScriptSourceDto,
 }
 
-export type CreateScriptVersionProvider = (scriptId: ScriptDto['id'], data: CreateScriptVersionDto) => Promise<void>
+export type CreateScriptVersionProvider = (scriptId: ScriptDto['id'], data: CreateScriptVersionDto) => Promise<{ id: string }>

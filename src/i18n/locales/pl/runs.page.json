@@ -62,7 +62,8 @@
     "running": "Uruchomiony",
     "succeeded": "Wykonany",
     "failed": "Nieudany",
-    "cancelled": "Przerwany"
+    "cancelled": "Przerwany",
+    "cancelling": "Anulowany"
   },
   "table": {
     "displayedRows": "Strona",

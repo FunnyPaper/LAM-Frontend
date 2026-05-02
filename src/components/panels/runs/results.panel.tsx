@@ -1,11 +1,10 @@
 import { Download } from '@mui/icons-material';
 import { Card, CardHeader, CardContent, Stack, Typography, Button, Box } from '@mui/material';
-import type { ScriptRunResultDto } from 'lam-frontend/api/queries/script-run.provider.dto';
 import { downloadFile } from 'lam-frontend/utils/download-file';
-
+import { useCallback } from 'react';
 export type ResultsPanelProps = {
   runId: string;
-  resultData?: ScriptRunResultDto;
+  resultData?: Record<string, unknown>;
   labels: {
     result: string;
     description: string;
@@ -16,9 +15,9 @@ export type ResultsPanelProps = {
 };
 
 export function ResultsPanel({ runId, resultData = {}, labels }: ResultsPanelProps) {
-  const handleDownload = () => {
+  const handleDownload = useCallback(() => {
     downloadFile(JSON.stringify(resultData, null, 2), `script-run-${runId}-result.json`);
-  };
+  }, [resultData, runId]);
 
   return (
     <Card sx={{ mt: 2 }}>
