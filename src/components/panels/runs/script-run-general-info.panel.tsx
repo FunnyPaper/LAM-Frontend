@@ -41,7 +41,7 @@ export function ScriptRunGeneralInfoPanel({ isMobile, scriptRunData, labels }: S
                 {labels.createdAt}
               </Typography>
               <Typography>
-                {scriptRunData.createdAt ? format(new Date(scriptRunData.createdAt), 'yyyy-MM-dd HH:mm:ss') : '-'}
+                {scriptRunData.createdAt ? format(new Date(scriptRunData.createdAt), 'yyyy/MM/dd HH:mm:ss') : '-'}
               </Typography>
             </Box>
             <Box>
@@ -49,7 +49,7 @@ export function ScriptRunGeneralInfoPanel({ isMobile, scriptRunData, labels }: S
                 {labels.updatedAt}
               </Typography>
               <Typography>
-                {scriptRunData.updatedAt ? format(new Date(scriptRunData.updatedAt), 'yyyy-MM-dd HH:mm:ss') : '-'}
+                {scriptRunData.updatedAt ? format(new Date(scriptRunData.updatedAt), 'yyyy/MM/dd HH:mm:ss') : '-'}
               </Typography>
             </Box>
             <Box>
@@ -57,7 +57,7 @@ export function ScriptRunGeneralInfoPanel({ isMobile, scriptRunData, labels }: S
                 {labels.finishedAt}
               </Typography>
               <Typography>
-                {scriptRunData.finishedAt ? format(new Date(scriptRunData.finishedAt), 'yyyy-MM-dd HH:mm:ss') : '-'}
+                {scriptRunData.finishedAt ? format(new Date(scriptRunData.finishedAt), 'yyyy/MM/dd HH:mm:ss') : '-'}
               </Typography>
             </Box>
           </Stack>

@@ -1,6 +1,6 @@
 import { Card, CardHeader, IconButton, Stack, Typography, Chip } from '@mui/material';
 import type { ScriptRunDto } from '../../../api/queries/script-run.provider.dto';
-import { Delete, Stop, Visibility } from '@mui/icons-material';
+import { AddCircle, CheckCircle, Delete, Info, Inventory, Stop, Visibility } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { getRunStatusColor } from 'lam-frontend/utils/colors';
@@ -41,9 +41,10 @@ export function ScriptRunsListItem({ scriptRun, onEdit, onDelete, onCancel }: Sc
             </Typography>
             <Stack direction="row" spacing={1} flexWrap="wrap" mb={1}>
               {scriptRun.envSnapshot?.name && (
-                <Chip label={scriptRun.envSnapshot.name} size="small" variant="outlined" />
+                <Chip icon={<Inventory />} label={scriptRun.envSnapshot.name} size="small" variant="outlined" />
               )}
               <Chip
+                icon={<Info />}
                 label={t(`status.${scriptRun.status.toLowerCase()}`)}
                 size="small"
                 variant="outlined"
@@ -51,14 +52,16 @@ export function ScriptRunsListItem({ scriptRun, onEdit, onDelete, onCancel }: Sc
               />
               {scriptRun.createdAt && (
                 <Chip
-                  label={`${t('createdAt')}: ${format(new Date(scriptRun.createdAt), 'yyyy-MM-dd HH:mm')}`}
+                  icon={<AddCircle />}
+                  label={format(new Date(scriptRun.createdAt), 'yyyy/MM/dd HH:mm')}
                   size="small"
                   variant="outlined"
                 />
               )}
               {scriptRun.finishedAt && (
                 <Chip
-                  label={`${t('finishedAt')}: ${format(new Date(scriptRun.finishedAt), 'yyyy-MM-dd HH:mm')}`}
+                  icon={<CheckCircle />}
+                  label={format(new Date(scriptRun.finishedAt), 'yyyy/MM/dd HH:mm')}
                   size="small"
                   variant="outlined"
                 />

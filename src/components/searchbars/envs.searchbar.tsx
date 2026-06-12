@@ -1,6 +1,5 @@
-import { ArrowDownward, ArrowUpward, Search } from '@mui/icons-material';
+import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import {
-  Button,
   FormControl,
   InputLabel,
   MenuItem,

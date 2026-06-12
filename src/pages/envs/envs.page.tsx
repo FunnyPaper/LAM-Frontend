@@ -12,6 +12,7 @@ import { Add } from '@mui/icons-material';
 import type { CreateEnvDto } from 'lam-frontend/api/commands/env/create.env.provider';
 import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
 import { useDebounce } from 'use-debounce';
+import { useDrawerContainerContext } from '../../contexts/drawer-container.context';
 
 const defaultSearchParams: EnvSearchParams & PaginationParams = {
   page: 0,
@@ -30,6 +31,7 @@ export function EnvsPage() {
   const {
     env: { getAll, remove, update, create },
   } = useContext(ApiProvider)!;
+  const { containerRef } = useDrawerContainerContext();
 
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
@@ -108,6 +110,7 @@ export function EnvsPage() {
           }}
           onRemove={handleRemove}
           onClose={() => setOpenEditDrawer(false)}
+          containerRef={containerRef}
         />
       )}
       <EnvsList

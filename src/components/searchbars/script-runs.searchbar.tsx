@@ -47,7 +47,7 @@ export function ScriptRunsSearchBar({ searchParams, onSearchParamsChanged }: Scr
           <MenuItem value="">
             <em>{t('form.fields.allStatuses')}</em>
           </MenuItem>
-          {ScriptRunStatuses.map((status) => (
+          {ScriptRunStatuses.filter(status => status != 'Unknown').map((status) => (
             <MenuItem key={status} value={status}>
               {t(`status.${status.toLowerCase()}`)}
             </MenuItem>
