@@ -1,8 +1,8 @@
 import { Card, CardHeader, CardContent, Box, Typography, Chip } from '@mui/material';
-import { format } from 'date-fns';
 import type { ScriptRunEventDto } from 'lam-frontend/api/queries/script-run-event.provider.dto';
 import type { ScriptRunStatus } from 'lam-frontend/api/queries/script-run.provider.dto';
 import { getRunStatusColor } from 'lam-frontend/utils/colors';
+import { formatLongDate } from 'lam-frontend/utils/date';
 
 export type EventsPanelProps = {
   truncated: boolean;
@@ -40,7 +40,7 @@ export function EventsPanel({ truncated, events, labels }: EventsPanelProps) {
             events.map((event, index) => (
               <Box key={index} sx={{ mb: 2 }}>
                 <Typography variant="subtitle2">
-                  {event.type.toUpperCase()} - {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}
+                  {event.type.toUpperCase()} - {formatLongDate(new Date())}
                 </Typography>
                 {event.type === 'status' && (
                   <Chip

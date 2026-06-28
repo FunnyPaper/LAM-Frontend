@@ -29,12 +29,15 @@ export default defineConfig({
             external: [
                 "i18next",
                 "react-i18next",
-                'react', 
+                'react',
                 'react-dom',
                 "@mui/icons-material",
                 "@mui/material",
                 "@emotion/react",
-                "@emotion/styled"
+                "@emotion/styled",
+                "@ebay/nice-modal-react",
+                "monaco-editor",
+                "@monaco-editor/react"
             ]
         },
     }

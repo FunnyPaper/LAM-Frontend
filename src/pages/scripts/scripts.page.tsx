@@ -1,20 +1,18 @@
-
 import { useTranslation } from 'react-i18next';
 import { AppBar, Button, Stack, Typography } from '@mui/material';
 import { type PaginationParams, ScriptsList } from '../../components/lists/scripts/scripts.list';
-import { ConfirmModal } from '../../components/modals/confirm.modal';
 import { type ScriptSearchParams, ScriptsSearchBar } from '../../components/searchbars/scripts.searchbar';
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useContext, useState } from 'react';
 import { ApiProvider } from '../../providers/api.provider';
 import type { ScriptDto } from '../../api/queries/script.provider';
+import type { ScriptVersionDto } from '../../api/queries/script-version.provider';
 import { Add } from '@mui/icons-material';
-import { CreateScriptModal } from '../../components/modals/create-script.modal';
 import type { CreateScriptDto } from '../../api/commands/script/create.script.provider';
 import { useNavigate } from 'react-router';
 import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
 import { useDebounce } from 'use-debounce';
-import { PreviewScriptModal } from 'lam-frontend/components/modals/preview-script.modal';
+import { MODAL_IDS, showModal } from 'lam-frontend/components/modals/modal.definitions';
 
 const defaultSearchParams: ScriptSearchParams & PaginationParams = {
   page: 0,
@@ -32,13 +30,9 @@ export function ScriptsPage() {
   const { t } = useTranslation('scripts');
   const {
     script: { getAll, remove, create },
-    scriptVersion: { archive, publish, fork, remove: removeVersion },
+    scriptVersion: { archive, publish, fork, remove: removeVersion, getAll: getAllScriptVersions },
   } = useContext(ApiProvider)!;
   const navigate = useNavigate();
-
-  const [openRemoveConfirmModal, setOpenRemoveConfirmModal] = useState(false);
-  const [openCreateModal, setOpenCreateModal] = useState(false);
-  const [previewScript, setPreviewScript] = useState<ScriptDto | null>(null);
 
   const [selectedScript, setSelectedScript] = useState<ScriptDto | null>(null);
   const [searchParams, setSearchParams] = useState<ScriptSearchParams & PaginationParams>(defaultSearchParams);
@@ -56,21 +50,18 @@ export function ScriptsPage() {
 
   const handleRemove = (script: ScriptDto) => {
     setSelectedScript(script);
-    setOpenRemoveConfirmModal(true);
-  };
-
-  const handleConfirmRemove = async () => {
-    if (!selectedScript) return;
-
-    await remove(selectedScript.id);
-    setOpenRemoveConfirmModal(false);
-    setSelectedScript(null);
-    invalidateScript();
-  };
-
-  const handleCancelRemove = () => {
-    setOpenRemoveConfirmModal(false);
-    setSelectedScript(null);
+    showModal(MODAL_IDS.CONFIRM, {
+      title: t('confirm.delete.title'),
+      content: t('confirm.delete.content'),
+      confirmButtonText: t('confirm.delete.confirm'),
+      cancelButtonText: t('confirm.delete.cancel'),
+      confirmButtonColor: 'error',
+      onConfirm: async () => {
+        await remove(script.id);
+        setSelectedScript(null);
+        invalidateScript();
+      },
+    });
   };
 
   const handleSearchParamsChanged = (params: ScriptSearchParams | PaginationParams) => {
@@ -84,10 +75,31 @@ export function ScriptsPage() {
     try {
       await create(data);
     } finally {
-      setOpenCreateModal(false);
       invalidateScript();
     }
   };
+
+  const handlePreviewScript = useCallback((data: ScriptDto) => {
+    showModal(MODAL_IDS.PREVIEW_SCRIPT, {
+      script: data,
+      onRemove: async (scriptVersion: ScriptVersionDto) => {
+        await removeVersion(data.id, scriptVersion.id);
+      },
+      onEdit: (scriptVersion: ScriptVersionDto) => {
+        navigate(`/scripts/${data.id}?version=${scriptVersion.id}`);
+      },
+      onFork: (scriptVersion: ScriptVersionDto) =>
+        fork(data.id, scriptVersion.id)
+      ,
+      onArchive: (scriptVersion: ScriptVersionDto) =>
+        archive(data.id, scriptVersion.id)
+      ,
+      onPublish: (scriptVersion: ScriptVersionDto, versionData: { name: string }) =>
+        publish(data.id, scriptVersion.id, versionData)
+      ,
+      getScriptVersionsDataSourceFactory: (scriptId, params) => getAllScriptVersions(scriptId, params ?? {}),
+    });
+  }, [navigate, removeVersion, fork, archive, publish, getAllScriptVersions]);
 
   return (
     <Stack height="100%" sx={{ overflowX: 'hidden' }}>
@@ -106,7 +118,7 @@ export function ScriptsPage() {
             variant="contained"
             color="primary"
             sx={{ minWidth: '40px', height: '40px', alignSelf: 'center' }}
-            onClick={() => setOpenCreateModal(true)}
+            onClick={() => showModal(MODAL_IDS.CREATE_SCRIPT, { onCreate: handleCreateScript })}
           >
             <Add />
           </Button>
@@ -124,37 +136,12 @@ export function ScriptsPage() {
                 navigate(`/scripts/${data.id}`)
             }
         }}
-        onScriptPreviewClick={(data) => setPreviewScript(data)}
+        onScriptPreviewClick={handlePreviewScript}
         onScriptDeleteClick={handleRemove}
         onPaginationParamsChange={handleSearchParamsChanged}
         searchParams={searchParams}
         scripts={scripts}
         isLoading={isScriptsLoading}
-      />
-      <CreateScriptModal
-        open={openCreateModal}
-        onClose={() => setOpenCreateModal(false)}
-        onCreate={handleCreateScript}
-      />
-      <PreviewScriptModal
-        open={!!previewScript}
-        onClose={() => setPreviewScript(null)}
-        script={previewScript!}
-        onRemove={(scriptVersion) => removeVersion(previewScript!.id, scriptVersion.id)}
-        onEdit={(scriptVersion) => navigate(`/scripts/${previewScript!.id}?version=${scriptVersion.id}`)}
-        onFork={(scriptVersion) => fork(previewScript!.id, scriptVersion.id)}
-        onArchive={(scriptVersion) => archive(previewScript!.id, scriptVersion.id)}
-        onPublish={(scriptVersion, data) => publish(previewScript!.id, scriptVersion.id, data)}
-      />
-      <ConfirmModal
-        open={openRemoveConfirmModal}
-        title={t('confirm.delete.title')}
-        content={t('confirm.delete.content')}
-        onConfirm={handleConfirmRemove}
-        onCancel={handleCancelRemove}
-        confirmButtonText={t('confirm.delete.confirm')}
-        cancelButtonText={t('confirm.delete.cancel')}
-        confirmButtonColor="error"
       />
     </Stack>
   );

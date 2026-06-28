@@ -14,8 +14,8 @@ import { useCallback, useState, useContext, useMemo } from 'react';
 import { ApiProvider } from '../../providers/api.provider';
 import { ArrowBack, Delete, Description, Polyline } from '@mui/icons-material';
 import '@xyflow/react/dist/style.css';
-import { ConfirmModal } from 'lam-frontend/components/modals/confirm.modal';
 import { z } from 'zod';
+import { MODAL_IDS, showModal } from 'lam-frontend/components/modals/modal.definitions';
 import { ScriptFlow } from 'lam-frontend/components/flow/script.flow';
 import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
 import type { UpdateScriptDto } from 'lam-frontend/api/commands/script/update.script.provider';
@@ -41,7 +41,6 @@ export function ScriptsDetailsPage() {
   } = useContext(ApiProvider)!;
 
   const [viewMode, setViewMode] = useState<'flow' | 'editor'>('editor');
-  const [openRemoveConfirmModal, setOpenRemoveConfirmModal] = useState(false);
 
   const jsonSchemaDataSource = useMemo(() => getJsonSchema('1.0'), [getJsonSchema]);
   const { data: jsonSchema } = useDataSourceHook(jsonSchemaDataSource);
@@ -123,18 +122,24 @@ export function ScriptsDetailsPage() {
     invalidateScriptVersion();
   }, [archiveScriptVersion, invalidateScriptVersion])
 
-  const handleRemove = useCallback(() => setOpenRemoveConfirmModal(true), [setOpenRemoveConfirmModal]);
+  const handleRemove = useCallback(() => {
+    if (!scriptData) return;
+    showModal(MODAL_IDS.CONFIRM, {
+      title: t('confirm.delete.title'),
+      content: t('confirm.delete.content'),
+      confirmButtonText: t('confirm.delete.confirm'),
+      cancelButtonText: t('confirm.delete.cancel'),
+      confirmButtonColor: 'error',
+      onConfirm: async () => {
+        await removeScript(scriptData.id);
+        navigate('/scripts', { replace: true });
+      },
+    });
+  }, [scriptData, navigate, removeScript, t]);
 
   const handleBackToList = useCallback(() => navigate('/scripts'), [navigate]);
   const handleSwitchView = useCallback((newView: 'flow' | 'editor') => setViewMode(newView), []);
 
-  const handleConfirmRemove = async () => {
-    if (!scriptData) return;
-
-    await removeScript(scriptData.id);
-    setOpenRemoveConfirmModal(false);
-    navigate('/scripts', { replace: true });
-  };
 
   if (isScriptLoading) {
     return <CircularProgress />;
@@ -211,16 +216,6 @@ export function ScriptsDetailsPage() {
           />
         }
       </Box>
-      <ConfirmModal
-        open={openRemoveConfirmModal}
-        title={t('confirm.delete.title')}
-        content={t('confirm.delete.content')}
-        onConfirm={handleConfirmRemove}
-        onCancel={() => setOpenRemoveConfirmModal(false)}
-        confirmButtonText={t('confirm.delete.confirm')}
-        cancelButtonText={t('confirm.delete.cancel')}
-        confirmButtonColor="error"
-      />
     </Stack>
   );
 }

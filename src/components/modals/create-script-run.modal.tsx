@@ -14,23 +14,26 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Close } from '@mui/icons-material';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import type { ScriptDto } from '../../api/queries/script.provider';
 import type { EnvDto } from '../../api/queries/env.provider';
-import { ApiProvider } from 'lam-frontend/providers/api.provider';
+import type { Paginated } from '../../api/queries/paginated.provider';
+import type { DataSource } from '../../api/resources/datasource';
+import type { ScriptVersionDto, GetScriptVersionsProviderParams } from '../../api/queries/script-version.provider';
+import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
 import { ScriptsTable, type PaginationParams as ScriptsPaginationParams } from '../tables/script.table';
 import { EnvsTable, type PaginationParams as EnvsPaginationParams } from '../tables/envs.table';
-import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
-import type { ScriptVersionDto } from 'lam-frontend/api';
 import {
   ScriptsVersionTable,
   type PaginationParams as ScriptVersionsPaginationParams,
 } from '../tables/script-version.table';
+import NiceModal, { useModal } from '@ebay/nice-modal-react';
 
 export type CreateScriptRunModalProps = {
-  open: boolean;
-  onClose: () => void;
   onCreate: (data: { envId?: string; scriptVersionId: string }) => void;
+  getAllEnvsDataSource: DataSource<Paginated<EnvDto>> | null;
+  getAllScriptsDataSource: DataSource<Paginated<ScriptDto>> | null;
+  getScriptVersionsDataSourceFactory: ((scriptId: string, params?: GetScriptVersionsProviderParams) => DataSource<Paginated<ScriptVersionDto>>) | null;
 };
 
 const defaultEnvsSearchParams: EnvsPaginationParams = {
@@ -48,9 +51,14 @@ const defaultScriptVersionSearchParams: ScriptVersionsPaginationParams = {
   limit: 10,
 };
 
-export function CreateScriptRunModal({ open, onClose, onCreate }: CreateScriptRunModalProps) {
+function CreateScriptRunModalInner({
+  onCreate,
+  getAllEnvsDataSource,
+  getAllScriptsDataSource,
+  getScriptVersionsDataSourceFactory,
+}: CreateScriptRunModalProps) {
   const { t } = useTranslation('runs');
-  const { script, scriptVersion, env } = useContext(ApiProvider)!;
+  const modal = useModal();
 
   const [step, setStep] = useState(0);
 
@@ -64,23 +72,30 @@ export function CreateScriptRunModal({ open, onClose, onCreate }: CreateScriptRu
   const [selectedEnv, setSelectedEnv] = useState<EnvDto | null>(null);
   const [selectedScriptVersion, setSelectedScriptVersion] = useState<ScriptVersionDto | null>(null);
 
-  const getAllEnvsDataSource = useMemo(() => env.getAll(envsSearchParams), [env, envsSearchParams]);
-  const getAllScriptsDataSource = useMemo(() => script.getAll(scriptsSearchParams), [script, scriptsSearchParams]);
-  const getAllScriptVersionsDataSource = useMemo(
-    () =>
-      selectedScript &&
-      scriptVersion.getAll(selectedScript?.id, {
-        ...scriptVersionsSearchParams,
-        filter: { status: 'Published' },
-        sort: { field: 'versionNumber', order: 'desc' },
-      }),
-    [scriptVersion, scriptVersionsSearchParams, selectedScript]
+  const envsDatasource = useMemo(
+    () => getAllEnvsDataSource,
+    [getAllEnvsDataSource]
   );
 
-  const { data: envs, isLoading: isEnvsLoading } = useDataSourceHook(getAllEnvsDataSource);
-  const { data: scripts, isLoading: isScriptsLoading } = useDataSourceHook(getAllScriptsDataSource);
+  const scriptsDatasource = useMemo(
+    () => getAllScriptsDataSource,
+    [getAllScriptsDataSource]
+  );
+
+  const scriptVersionsDatasource = useMemo(() => {
+    if (!selectedScript || !getScriptVersionsDataSourceFactory) return null;
+    return getScriptVersionsDataSourceFactory(selectedScript.id, {
+      page: scriptVersionsSearchParams.page,
+      limit: scriptVersionsSearchParams.limit,
+      filter: { status: 'Published' },
+      sort: { field: 'versionNumber', order: 'desc' },
+    });
+  }, [getScriptVersionsDataSourceFactory, selectedScript, scriptVersionsSearchParams]);
+
+  const { data: envs, isLoading: isEnvsLoading } = useDataSourceHook(envsDatasource);
+  const { data: scripts, isLoading: isScriptsLoading } = useDataSourceHook(scriptsDatasource);
   const { data: scriptVersions, isLoading: isScriptVersionsLoading } =
-    useDataSourceHook(getAllScriptVersionsDataSource);
+    useDataSourceHook(scriptVersionsDatasource);
 
   const completed = useMemo(
     () => ({
@@ -120,16 +135,16 @@ export function CreateScriptRunModal({ open, onClose, onCreate }: CreateScriptRu
       setSelectedEnv(null);
       setSelectedScript(null);
       setSelectedScriptVersion(null);
-      onClose();
+      modal.remove();
     }
-  }, [onClose, onCreate, selectedEnv?.id, selectedScriptVersion]);
+  }, [modal, onCreate, selectedEnv?.id, selectedScriptVersion]);
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open onClose={modal.remove}>
       <DialogTitle>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h6">{t('createModal.title')}</Typography>
-          <IconButton onClick={onClose}>
+          <IconButton onClick={modal.remove}>
             <Close />
           </IconButton>
         </Stack>
@@ -139,7 +154,7 @@ export function CreateScriptRunModal({ open, onClose, onCreate }: CreateScriptRu
         <Stack gap={2} sx={{ height: '100%' }}>
           <Stepper nonLinear activeStep={step} sx={{ [`&.${stepperClasses.horizontal}`]: { height: 64 } }}>
             <Step completed={completed[0]}>
-              <StepLabel>Select script</StepLabel>
+              <StepLabel>{t('createModal.steps.selectScript')}</StepLabel>
             </Step>
             <Step completed={completed[1]}>
               <StepLabel
@@ -147,16 +162,16 @@ export function CreateScriptRunModal({ open, onClose, onCreate }: CreateScriptRu
                 {...(!selectedScript && {
                   optional: (
                     <Typography variant="subtitle2" color="error">
-                      First select the script
+                      {t('createModal.steps.firstSelectScript')}
                     </Typography>
                   ),
                 })}
               >
-                Select version
+                {t('createModal.steps.selectVersion')}
               </StepLabel>
             </Step>
             <Step completed={completed[2]}>
-              <StepLabel optional>Select env</StepLabel>
+              <StepLabel optional>{t('createModal.steps.selectEnv')}</StepLabel>
             </Step>
           </Stepper>
           {step === 0 && (
@@ -190,9 +205,9 @@ export function CreateScriptRunModal({ open, onClose, onCreate }: CreateScriptRu
             />
           )}
           <Stack direction="row" justifyContent="space-between">
-            <Button onClick={handleBack}>Back</Button>
+            <Button onClick={handleBack}>{t('createModal.back')}</Button>
             <Stack direction="row" gap={2}>
-              <Button onClick={handleNext}>Next</Button>
+              <Button onClick={handleNext}>{t('createModal.next')}</Button>
               <Button onClick={handleRun} variant="contained" disabled={!selectedScriptVersion}>
                 {t('createModal.run')}
               </Button>
@@ -203,3 +218,5 @@ export function CreateScriptRunModal({ open, onClose, onCreate }: CreateScriptRu
     </Dialog>
   );
 }
+
+export const CreateScriptRunModal = NiceModal.create(CreateScriptRunModalInner);

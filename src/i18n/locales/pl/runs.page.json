@@ -24,7 +24,15 @@
   "createModal": {
     "title": "Utwórz uruchomienie skryptu",
     "cancel": "Anuluj",
-    "run": "Uruchom"
+    "run": "Uruchom",
+    "steps": {
+      "selectScript": "Wybierz skrypt",
+      "selectVersion": "Wybierz wersję",
+      "selectEnv": "Wybierz środowisko",
+      "firstSelectScript": "Najpierw wybierz skrypt"
+    },
+    "back": "Wróć",
+    "next": "Dalej"
   },
   "details": {
     "header": "Szczegóły uruchomienia skryptu",

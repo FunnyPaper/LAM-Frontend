@@ -1,3 +1,5 @@
 export * from './app'
 export * from './i18n/i18n'
 export * from './api'
+export { registerModals } from './components/modals/modal.definitions'
+export { AppThemeProvider } from './providers/app.theme.provider'

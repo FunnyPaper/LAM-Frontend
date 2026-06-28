@@ -22,7 +22,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import ScriptsIcon from '@mui/icons-material/Description';
 import RunsIcon from '@mui/icons-material/DoubleArrow';
 import EnvsIcon from '@mui/icons-material/Inventory';
-import { useState, type ReactNode } from 'react';
+import { useState, useMemo, type ReactNode } from 'react';
 import { Link, Outlet } from 'react-router';
 import { useTranslation } from 'react-i18next';
 
@@ -133,6 +133,37 @@ export function DashboardLayout() {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
 
+  const navItems = useMemo(() => ([
+    {
+      text: t('profile:header'),
+      path: '/profile',
+      icon: <AccountIcon />,
+    },
+    {
+      text: t('envs:header'),
+      path: '/envs',
+      icon: <EnvsIcon />,
+    },
+    {
+      text: t('scripts:header'),
+      path: '/scripts',
+      icon: <ScriptsIcon />,
+    },
+    {
+      text: t('runs:header'),
+      path: '/runs',
+      icon: <RunsIcon />,
+    },
+  ]), [t]);
+
+  const settingsItems = useMemo(() => ([
+    {
+      text: t('settings:header'),
+      path: '/settings',
+      icon: <SettingsIcon />,
+    },
+  ]), [t]);
+
   return (
     <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
       <CssBaseline />
@@ -153,40 +184,13 @@ export function DashboardLayout() {
           </DrawerHeader>
           <Divider />
           <List disablePadding>
-            {[
-              {
-                text: t('profile:header'),
-                path: '/profile',
-                icon: <AccountIcon />,
-              },
-              {
-                text: t('envs:header'),
-                path: '/envs',
-                icon: <EnvsIcon />,
-              },
-              {
-                text: t('scripts:header'),
-                path: '/scripts',
-                icon: <ScriptsIcon />,
-              },
-              {
-                text: t('runs:header'),
-                path: '/runs',
-                icon: <RunsIcon />,
-              },
-            ].map((element) => listItemProvider(open, element))}
+            {navItems.map((element) => listItemProvider(open, element))}
           </List>
         </Stack>
         <Stack>
           <Divider />
           <List disablePadding sx={{ justifyContent: 'end' }}>
-            {[
-              {
-                text: t('settings:header'),
-                path: '/settings',
-                icon: <SettingsIcon />,
-              },
-            ].map((element) => listItemProvider(open, element))}
+            {settingsItems.map((element) => listItemProvider(open, element))}
           </List>
         </Stack>
       </Drawer>

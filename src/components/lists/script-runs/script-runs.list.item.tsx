@@ -2,7 +2,7 @@ import { Card, CardHeader, IconButton, Stack, Typography, Chip } from '@mui/mate
 import type { ScriptRunDto } from '../../../api/queries/script-run.provider.dto';
 import { AddCircle, CheckCircle, Delete, Info, Inventory, Stop, Visibility } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
+import { formatShortDate } from '../../../utils/date';
 import { getRunStatusColor } from 'lam-frontend/utils/colors';
 
 export type ScriptRunsListItemProps = {
@@ -53,7 +53,7 @@ export function ScriptRunsListItem({ scriptRun, onEdit, onDelete, onCancel }: Sc
               {scriptRun.createdAt && (
                 <Chip
                   icon={<AddCircle />}
-                  label={format(new Date(scriptRun.createdAt), 'yyyy/MM/dd HH:mm')}
+                  label={formatShortDate(scriptRun.createdAt)}
                   size="small"
                   variant="outlined"
                 />
@@ -61,7 +61,7 @@ export function ScriptRunsListItem({ scriptRun, onEdit, onDelete, onCancel }: Sc
               {scriptRun.finishedAt && (
                 <Chip
                   icon={<CheckCircle />}
-                  label={format(new Date(scriptRun.finishedAt), 'yyyy/MM/dd HH:mm')}
+                  label={formatShortDate(scriptRun.finishedAt)}
                   size="small"
                   variant="outlined"
                 />

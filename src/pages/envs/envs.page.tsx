@@ -2,8 +2,6 @@ import { AppBar, Button, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { EnvDrawer } from '../../components/drawers/env.drawer';
 import { type PaginationParams, EnvsList } from '../../components/lists/envs/envs.list';
-import { CreateEnvModal } from '../../components/modals/create-env.modal';
-import { ConfirmModal } from '../../components/modals/confirm.modal';
 import { type EnvSearchParams, EnvsSearchBar } from '../../components/searchbars/envs.searchbar';
 import { useContext, useMemo, useState } from 'react';
 import { ApiProvider } from '../../providers/api.provider';
@@ -13,6 +11,7 @@ import type { CreateEnvDto } from 'lam-frontend/api/commands/env/create.env.prov
 import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
 import { useDebounce } from 'use-debounce';
 import { useDrawerContainerContext } from '../../contexts/drawer-container.context';
+import { MODAL_IDS, showModal } from 'lam-frontend/components/modals/modal.definitions';
 
 const defaultSearchParams: EnvSearchParams & PaginationParams = {
   page: 0,
@@ -33,8 +32,6 @@ export function EnvsPage() {
   } = useContext(ApiProvider)!;
   const { containerRef } = useDrawerContainerContext();
 
-  const [openCreateModal, setOpenCreateModal] = useState(false);
-  const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [openEditDrawer, setOpenEditDrawer] = useState(false);
   const [selectedEnv, setSelectedEnv] = useState<EnvDto | null>(null);
   const [searchParams, setSearchParams] = useState<EnvSearchParams & PaginationParams>(defaultSearchParams);
@@ -49,21 +46,19 @@ export function EnvsPage() {
 
   const handleRemove = (env: EnvDto) => {
     setSelectedEnv(env);
-    setOpenConfirmModal(true);
-  };
-
-  const handleConfirmRemove = async () => {
-    if (!selectedEnv) return;
-    await remove(selectedEnv.id);
-    setOpenEditDrawer(false);
-    setOpenConfirmModal(false);
-    setSelectedEnv(null);
-    invalidateEnv();
-  };
-
-  const handleCancelRemove = () => {
-    setSelectedEnv(null);
-    setOpenEditDrawer(false);
+    showModal(MODAL_IDS.CONFIRM, {
+      title: t('confirm.delete.title'),
+      content: t('confirm.delete.content'),
+      confirmButtonText: t('confirm.delete.confirm'),
+      cancelButtonText: t('confirm.delete.cancel'),
+      confirmButtonColor: 'error',
+      onConfirm: async () => {
+        await remove(env.id);
+        setOpenEditDrawer(false);
+        setSelectedEnv(null);
+        invalidateEnv();
+      },
+    });
   };
 
   const handleParamsChange = (params: EnvSearchParams | PaginationParams) => {
@@ -89,7 +84,7 @@ export function EnvsPage() {
             size="small"
             variant="contained"
             sx={{ minWidth: '40px', height: '40px', alignSelf: 'center' }}
-            onClick={() => setOpenCreateModal(true)}
+            onClick={() => showModal(MODAL_IDS.CREATE_ENV, { onCreate: async (data: CreateEnvDto) => { await create(data); invalidateEnv(); }})}
           >
             <Add />
           </Button>
@@ -103,8 +98,8 @@ export function EnvsPage() {
         <EnvDrawer<CreateEnvDto>
           open={openEditDrawer}
           env={selectedEnv}
-          onSubmit={(data) => {
-            update(selectedEnv.id, data);
+          onSubmit={async (data) => {
+            await update(selectedEnv.id, data);
             setOpenEditDrawer(false);
             invalidateEnv();
           }}
@@ -123,25 +118,6 @@ export function EnvsPage() {
         searchParams={searchParams}
         envs={envs}
         isLoading={isEnvsLoading}
-      />
-      <CreateEnvModal
-        open={openCreateModal}
-        onClose={() => setOpenCreateModal(false)}
-        onCreate={async (data) => {
-          await create(data);
-          setOpenCreateModal(false);
-          invalidateEnv();
-        }}
-      />
-      <ConfirmModal
-        open={openConfirmModal}
-        title={t('confirm.delete.title')}
-        content={t('confirm.delete.content')}
-        onConfirm={handleConfirmRemove}
-        onCancel={handleCancelRemove}
-        confirmButtonText={t('confirm.delete.confirm')}
-        cancelButtonText={t('confirm.delete.cancel')}
-        confirmButtonColor="error"
       />
     </Stack>
   );

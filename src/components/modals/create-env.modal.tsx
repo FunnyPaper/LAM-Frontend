@@ -3,21 +3,30 @@ import { useTranslation } from 'react-i18next';
 import type { CreateEnvDto } from '../../api/commands/env/create.env.provider';
 import { Close } from '@mui/icons-material';
 import { EnvForm } from '../forms/env.form';
+import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import { useCallback } from 'react';
 
 export type CreateEnvModalProps = {
-  open: boolean;
-  onClose: () => void;
   onCreate: (data: CreateEnvDto) => void;
 };
 
-export function CreateEnvModal({ open, onClose, onCreate }: CreateEnvModalProps) {
+function CreateEnvModalInner({ onCreate }: CreateEnvModalProps) {
   const { t } = useTranslation('envs');
+  const modal = useModal();
+
+  const handleCreate = useCallback(
+    (data: CreateEnvDto) => {
+      onCreate(data);
+      modal.remove();
+    },
+    [onCreate, modal]
+  );
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth>
+    <Dialog open onClose={modal.remove} fullWidth>
       <DialogTitle>{t('createModal.title')}</DialogTitle>
       <IconButton
-        onClick={onClose}
+        onClick={modal.remove}
         sx={(theme) => ({
           position: 'absolute',
           right: 8,
@@ -29,8 +38,10 @@ export function CreateEnvModal({ open, onClose, onCreate }: CreateEnvModalProps)
       </IconButton>
       <Divider />
       <DialogContent>
-        <EnvForm<CreateEnvDto> onSubmit={onCreate} />
+        <EnvForm<CreateEnvDto> onSubmit={handleCreate} />
       </DialogContent>
     </Dialog>
   );
 }
+
+export const CreateEnvModal = NiceModal.create(CreateEnvModalInner);

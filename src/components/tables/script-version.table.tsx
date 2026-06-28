@@ -2,6 +2,7 @@ import { Typography, Box, TablePagination, tablePaginationClasses } from '@mui/m
 import type { Paginated, ScriptVersionDto } from 'lam-frontend/api';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { formatShortDate } from 'lam-frontend/utils/date';
 
 export type PaginationParams = {
   page: number;
@@ -137,7 +138,7 @@ export function ScriptsVersionTable({
                 fontSize={14}
                 sx={{ color: selectedScriptVersion?.id === scriptVersion.id ? 'primary.dark' : 'inherit' }}
               >
-                {scriptVersion.createdAt ?? '-'}
+                {formatShortDate(scriptVersion.createdAt)}
               </Typography>
               <Typography
                 noWrap
@@ -145,7 +146,7 @@ export function ScriptsVersionTable({
                 fontSize={14}
                 sx={{ color: selectedScriptVersion?.id === scriptVersion.id ? 'primary.dark' : 'inherit' }}
               >
-                {scriptVersion.updatedAt ?? '-'}
+                {formatShortDate(scriptVersion.updatedAt)}
               </Typography>
             </Box>
           ))

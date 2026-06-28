@@ -6,7 +6,7 @@ import type { ScriptVersionDto } from 'lam-frontend/api/queries/script-version.p
 import { useTranslation } from 'react-i18next';
 import { useContext, useEffect } from 'react';
 import { ApiProvider } from '../../../providers/api.provider';
-import { format } from 'date-fns';
+import { formatShortDate } from '../../../utils/date';
 
 export type ScriptsListItemProps = {
   script: ScriptDto;
@@ -86,7 +86,7 @@ export function ScriptsListItem({ script, onEdit, onPreview, onDelete }: Scripts
                 />
                 <Chip
                   icon={<AddCircle />}
-                  label={format(new Date(lastVersion.createdAt), 'yyyy/MM/dd HH:mm')}
+                  label={formatShortDate(lastVersion.createdAt)}
                   size="small"
                   variant="outlined"
                 />

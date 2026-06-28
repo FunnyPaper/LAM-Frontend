@@ -46,7 +46,7 @@ export function useDataSourceHook<T>(
         );
 
         return () => unsubscribe?.();
-    }, [setData, setError, setLoading, dataResource, enabled]);
+    }, [dataResource, enabled]);
 
     return {
         isLoading: loading,

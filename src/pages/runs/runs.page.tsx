@@ -4,13 +4,17 @@ import { useContext, useMemo, useState } from 'react';
 import { ApiProvider } from '../../providers/api.provider';
 import { Add } from '@mui/icons-material';
 import { type PaginationParams, ScriptRunsList } from '../../components/lists/script-runs/script-runs.list';
-import { ConfirmModal } from '../../components/modals/confirm.modal';
 import { type ScriptRunSearchParams, ScriptRunsSearchBar } from '../../components/searchbars/script-runs.searchbar';
-import { CreateScriptRunModal } from '../../components/modals/create-script-run.modal';
 import type { ScriptRunDto } from '../../api/queries/script-run.provider.dto';
 import type { CreateScriptRunDto } from '../../api/commands/script-run/create.script-run.provider';
+import type { EnvDto } from '../../api/queries/env.provider';
+import type { ScriptDto } from '../../api/queries/script.provider';
+import type { Paginated } from '../../api/queries/paginated.provider';
+import type { DataSource } from '../../api/resources/datasource';
+import type { ScriptVersionDto, GetScriptVersionsProviderParams } from '../../api/queries/script-version.provider';
 import { useNavigate } from 'react-router';
 import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
+import { MODAL_IDS, showModal } from 'lam-frontend/components/modals/modal.definitions';
 
 const defaultSearchParams: ScriptRunSearchParams & NoInfer<PaginationParams> = {
   page: 0,
@@ -28,12 +32,12 @@ export function RunsPage() {
   const { t } = useTranslation('runs');
   const {
     scriptRun: { getAll, remove, create, cancel },
+    env: { getAll: getAllEnvs },
+    script: { getAll: getAllScripts },
+    scriptVersion: { getAll: getAllScriptVersions },
   } = useContext(ApiProvider)!;
   const navigate = useNavigate();
 
-  const [openCreateModal, setOpenCreateModal] = useState(false);
-  const [openRemoveConfirmModal, setOpenRemoveConfirmModal] = useState(false);
-  const [selectedScriptRun, setSelectedScriptRun] = useState<ScriptRunDto | null>(null);
   const [searchParams, setSearchParams] = useState<ScriptRunSearchParams & NoInfer<PaginationParams>>(
     defaultSearchParams
   );
@@ -45,28 +49,53 @@ export function RunsPage() {
     invalidate: invalidateScriptRun,
   } = useDataSourceHook(scriptRunResource);
 
+  // Datasources for CreateScriptRunModal
+  const [envsPagination, setEnvsPagination] = useState<{ page: number; limit: number }>({ page: 0, limit: 10 });
+  const [scriptsPagination, setScriptsPagination] = useState<{ page: number; limit: number }>({ page: 0, limit: 10 });
+  const [scriptVersionsPagination, setScriptVersionsPagination] = useState<{
+    page?: number;
+    limit?: number;
+    filter?: Record<string, unknown>;
+    sort?: Record<string, unknown>;
+  }>({ page: 0, limit: 10 });
+
+  const getAllEnvsDataSource = useMemo<DataSource<Paginated<EnvDto>> | null>(
+    () => getAllEnvs(envsPagination),
+    [getAllEnvs, envsPagination]
+  );
+
+  const getAllScriptsDataSource = useMemo<DataSource<Paginated<ScriptDto>> | null>(
+    () => getAllScripts(scriptsPagination),
+    [getAllScripts, scriptsPagination]
+  );
+
+  const getScriptVersionsDataSourceFactory = useMemo<
+    ((scriptId: string, params?: GetScriptVersionsProviderParams) => DataSource<Paginated<ScriptVersionDto>>) | null
+  >(
+    () =>
+      getAllScriptVersions
+        ? (scriptId, params) => getAllScriptVersions(scriptId, params ?? {})
+        : null,
+    [getAllScriptVersions]
+  );
+
   const handleRemove = (scriptRun: ScriptRunDto) => {
-    setSelectedScriptRun(scriptRun);
-    setOpenRemoveConfirmModal(true);
+    showModal(MODAL_IDS.CONFIRM, {
+      title: t('confirm.delete.title'),
+      content: t('confirm.delete.content'),
+      confirmButtonText: t('confirm.delete.confirm'),
+      cancelButtonText: t('confirm.delete.cancel'),
+      confirmButtonColor: 'error',
+      onConfirm: async () => {
+        await remove(scriptRun.id);
+        invalidateScriptRun();
+      },
+    });
   };
 
   const handleCancel = async (scriptRun: ScriptRunDto) => {
     await cancel(scriptRun.id);
     invalidateScriptRun();
-  };
-
-  const handleConfirmRemove = async () => {
-    if (!selectedScriptRun) return;
-    await remove(selectedScriptRun.id);
-
-    setOpenRemoveConfirmModal(false);
-    setSelectedScriptRun(null);
-    invalidateScriptRun();
-  };
-
-  const handleCancelRemove = () => {
-    setOpenRemoveConfirmModal(false);
-    setSelectedScriptRun(null);
   };
 
   const handleSearchParamsChanged = (params: Partial<ScriptRunSearchParams> | PaginationParams) =>
@@ -80,7 +109,6 @@ export function RunsPage() {
       await create(data);
     } finally {
       invalidateScriptRun();
-      setOpenCreateModal(false);
     }
   };
 
@@ -100,7 +128,14 @@ export function RunsPage() {
             size="small"
             variant="contained"
             sx={{ minWidth: '40px', height: '40px', alignSelf: 'center' }}
-            onClick={() => setOpenCreateModal(true)}
+            onClick={() =>
+              showModal(MODAL_IDS.CREATE_SCRIPT_RUN, {
+                onCreate: handleCreateScriptRun,
+                getAllEnvsDataSource: getAllEnvsDataSource,
+                getAllScriptsDataSource: getAllScriptsDataSource,
+                getScriptVersionsDataSourceFactory: getScriptVersionsDataSourceFactory,
+              })
+            }
           >
             <Add />
           </Button>
@@ -118,21 +153,6 @@ export function RunsPage() {
         searchParams={searchParams}
         scriptRuns={scriptRunData}
         isLoading={isScriptRunLoading}
-      />
-      <CreateScriptRunModal
-        open={openCreateModal}
-        onClose={() => setOpenCreateModal(false)}
-        onCreate={handleCreateScriptRun}
-      />
-      <ConfirmModal
-        open={openRemoveConfirmModal}
-        title={t('confirm.delete.title')}
-        content={t('confirm.delete.content')}
-        onConfirm={handleConfirmRemove}
-        onCancel={handleCancelRemove}
-        confirmButtonText={t('confirm.delete.confirm')}
-        cancelButtonText={t('confirm.delete.cancel')}
-        confirmButtonColor="error"
       />
     </Stack>
   );

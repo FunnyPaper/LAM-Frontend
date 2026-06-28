@@ -13,7 +13,6 @@ import { ScriptsDetailsPage } from './pages/scripts/scripts.details.page';
 import { RunsDetailsPage } from './pages/runs/runs.details.page';
 import { ProtectedPage } from './pages/protected.page';
 import { PublicPage } from './pages/public.page';
-import { AppThemeProvider } from './providers/app.theme.provider';
 import { DrawerContainerProvider, type DrawerContainerContextType } from './contexts/drawer-container.context';
 
 export type AppProps = {
@@ -26,33 +25,31 @@ export function App(props: AppProps) {
   return (
     <DrawerContainerProvider containerRef={props.drawerContainerRef || { current: null }}>
       <ApiProvider value={props.apiProviders}>
-        <AppThemeProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route element={<ProtectedPage authState={props.authState} />}>
-                <Route element={<DashboardLayout />}>
-                  <Route path="profile" element={<ProfilePage />} />
-                  <Route path="envs" element={<EnvsPage />} />
-                  <Route path="scripts">
-                    <Route index element={<ScriptsPage />} />
-                    <Route path=":id" element={<ScriptsDetailsPage />} />
-                  </Route>
-                  <Route path="runs">
-                    <Route index element={<RunsPage />} />
-                    <Route path=":id" element={<RunsDetailsPage />} />
-                  </Route>
-                  <Route path="settings" element={<SettingsPage />} />
+        <BrowserRouter>
+          <Routes>
+            <Route element={<ProtectedPage authState={props.authState} />}>
+              <Route element={<DashboardLayout />}>
+                <Route path="profile" element={<ProfilePage />} />
+                <Route path="envs" element={<EnvsPage />} />
+                <Route path="scripts">
+                  <Route index element={<ScriptsPage />} />
+                  <Route path=":id" element={<ScriptsDetailsPage />} />
                 </Route>
+                <Route path="runs">
+                  <Route index element={<RunsPage />} />
+                  <Route path=":id" element={<RunsDetailsPage />} />
+                </Route>
+                <Route path="settings" element={<SettingsPage />} />
               </Route>
-              <Route element={<PublicPage authState={props.authState} />}>
-                <Route path="login" element={<LoginPage />} />
-                <Route path="register" element={<RegisterPage />} />
-              </Route>
-              <Route path="/" element={<Navigate to="/profile" />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </BrowserRouter>
-        </AppThemeProvider>
+            </Route>
+            <Route element={<PublicPage authState={props.authState} />}>
+              <Route path="login" element={<LoginPage />} />
+              <Route path="register" element={<RegisterPage />} />
+            </Route>
+            <Route path="/" element={props.authState === 'loggedIn' ? <Navigate to="/profile" /> : <Navigate to="/login" />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </BrowserRouter>
       </ApiProvider>
     </DrawerContainerProvider>
   );

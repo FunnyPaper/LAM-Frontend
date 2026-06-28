@@ -1,10 +1,6 @@
-// TODO: Update state changes in effect - maybe zustand or simple reducer will do the trick
-/* eslint-disable react-hooks/set-state-in-effect */
 import {
-  AppBar,
   Box,
   Button,
-  Chip,
   CircularProgress,
   Grid,
   Stack,
@@ -21,7 +17,6 @@ import {
   type ScriptRunResultDto,
   type ScriptRunStatus,
 } from '../../api/queries/script-run.provider.dto';
-import { Stop, Delete, ArrowBack } from '@mui/icons-material';
 import type { ScriptRunEventDto } from '../../api/queries/script-run-event.provider.dto';
 import { EnvsSnapshotPanel } from 'lam-frontend/components/panels/runs/env-snapshot.panel';
 import { EventsPanel } from 'lam-frontend/components/panels/runs/events.panel';
@@ -30,7 +25,7 @@ import { ScriptRunGeneralInfoPanel } from 'lam-frontend/components/panels/runs/s
 import { ScriptVersionSnapshotPanel } from 'lam-frontend/components/panels/runs/script-version-snapshot.panel';
 import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
 import { ScriptVersionStatuses, type ScriptVersionStatus } from 'lam-frontend/api/queries/script-version.provider';
-import { getRunStatusColor } from 'lam-frontend/utils/colors';
+import { RunDetailsAppBar } from 'lam-frontend/components/panels/runs/run-details-app-bar';
 
 export function RunsDetailsPage() {
   const { t: tRuns } = useTranslation('runs');
@@ -72,13 +67,13 @@ export function RunsDetailsPage() {
     } else if(scriptRunData) {
       setCurrentStatus(scriptRunData?.status);
     }
-  }, [scriptRunData, scriptRunEventData, setCurrentStatus]);
+  }, [scriptRunData, scriptRunEventData]);
 
   useEffect(() => {
     if (!scriptRunEventData) return;
 
     setScriptRunEvents((prev) => [...prev, scriptRunEventData]);
-  }, [setScriptRunEvents, scriptRunEventData]);
+  }, [scriptRunEventData]);
 
   useEffect(() => {
     if (scriptRunEventData) {
@@ -96,9 +91,8 @@ export function RunsDetailsPage() {
     } else if (scriptRunData?.result) {
       setResultData(scriptRunData.result);
     }
-  }, [scriptRunData, scriptRunEventData, setResultData]);
+  }, [scriptRunData, scriptRunEventData]);
 
-  
   const handleBackToList = useCallback(() => navigate('/runs', { replace: true }), [navigate]);
 
   const handleStop = useCallback(async () => {
@@ -132,54 +126,15 @@ export function RunsDetailsPage() {
 
   return (
     <Box height="100%" display="flex" flexDirection="column">
-      <AppBar
-        position="relative"
-        sx={{
-          p: 2,
-          backgroundColor: 'background.paper',
-          color: 'text.primary',
-        }}
-      >
-        <Stack direction="row" gap={2} alignItems="center">
-          <Button
-            size="small"
-            variant="outlined"
-            sx={{ minWidth: '40px', height: '40px', alignSelf: 'center' }}
-            onClick={handleBackToList}
-          >
-            <ArrowBack />
-          </Button>
-          <Typography variant="h4">{tRuns('details.header')}</Typography>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Chip
-              label={tRuns(`status.${currentStatus.toLowerCase()}`)}
-              size="small"
-              variant="outlined"
-              color={getRunStatusColor(currentStatus)}
-            />
-          </Stack>
-          <Box sx={{ flexGrow: 1 }} />
-          {isRunning && (
-            <Button 
-              variant="outlined" 
-              color="secondary" 
-              startIcon={<Stop />} 
-              onClick={handleStop} 
-              disabled={currentStatus === 'Cancelling'}>
-              {tRuns('details.stop')}
-            </Button>
-          )}
-          {isFinished && (
-            <Button 
-              variant="outlined" 
-              color="error" 
-              startIcon={<Delete />} 
-              onClick={handleRemove}>
-              {tRuns('details.remove')}
-            </Button>
-          )}
-        </Stack>
-      </AppBar>
+      <RunDetailsAppBar
+        currentStatus={currentStatus}
+        isRunning={isRunning}
+        isFinished={isFinished}
+        runId={id!}
+        onBackToList={handleBackToList}
+        onStop={handleStop}
+        onRemove={handleRemove}
+      />
       <Box p={2} flexGrow={1} overflow="auto" display="flex" flexDirection="column">
         <Stack spacing={2} flexGrow={1} overflow="auto">
           <Grid container spacing={2} sx={{ flexGrow: 1 }}>

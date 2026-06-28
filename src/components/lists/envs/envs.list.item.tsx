@@ -13,8 +13,8 @@ import {
 import type { EnvDto } from '../../../api/queries/env.provider';
 import { AddCircle, Delete, Edit, ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useState } from 'react';
-import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { formatShortDate } from '../../../utils/date';
 
 export type EnvsListItemProps = {
   env: EnvDto;
@@ -53,7 +53,7 @@ export function EnvsListItem({ env, onEdit, onDelete }: EnvsListItemProps) {
             {env.createdAt && (
               <Chip
                 icon={<AddCircle />}
-                label={format(new Date(env.createdAt), 'yyyy/MM/dd HH:mm')}
+                label={formatShortDate(env.createdAt)}
                 size="small"
                 variant="outlined"
               />
@@ -61,7 +61,7 @@ export function EnvsListItem({ env, onEdit, onDelete }: EnvsListItemProps) {
             {env.updatedAt && (
               <Chip
                 icon={<Edit />}
-                label={format(new Date(env.updatedAt), 'yyyy/MM/dd HH:mm')}
+                label={formatShortDate(env.updatedAt)}
                 size="small"
                 variant="outlined"
               />

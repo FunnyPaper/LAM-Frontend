@@ -24,7 +24,15 @@
   "createModal": {
     "title": "Create Script Run",
     "cancel": "Cancel",
-    "run": "Run"
+    "run": "Run",
+    "steps": {
+      "selectScript": "Select script",
+      "selectVersion": "Select version",
+      "selectEnv": "Select env",
+      "firstSelectScript": "First select the script"
+    },
+    "back": "Back",
+    "next": "Next"
   },
   "details": {
     "header": "Script Run Details",

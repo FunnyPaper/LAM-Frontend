@@ -4,22 +4,31 @@ import { Close } from '@mui/icons-material';
 import { ScriptForm } from '../forms/script.form';
 import type { UpdateScriptDto } from 'lam-frontend/api/commands/script/update.script.provider';
 import type { ScriptDto } from 'lam-frontend/api/queries/script.provider';
+import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import { useCallback } from 'react';
 
 export type EditScriptModalProps = {
-  open: boolean;
-  onClose: () => void;
   script: ScriptDto;
   onEdit: (data: UpdateScriptDto) => void;
 };
 
-export function EditScriptModal({ open, onClose, script, onEdit }: EditScriptModalProps) {
+function EditScriptModalInner({ script, onEdit }: EditScriptModalProps) {
   const { t } = useTranslation('scripts');
+  const modal = useModal();
+
+  const handleEdit = useCallback(
+    (data: UpdateScriptDto) => {
+      onEdit(data);
+      modal.remove();
+    },
+    [onEdit, modal]
+  );
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth>
+    <Dialog open onClose={modal.remove} fullWidth>
       <DialogTitle>{t('modal.update.title')}</DialogTitle>
       <IconButton
-        onClick={onClose}
+        onClick={modal.remove}
         sx={(theme) => ({
           position: 'absolute',
           right: 8,
@@ -31,8 +40,10 @@ export function EditScriptModal({ open, onClose, script, onEdit }: EditScriptMod
       </IconButton>
       <Divider />
       <DialogContent>
-        <ScriptForm<UpdateScriptDto> script={script} onSubmit={onEdit} />
+        <ScriptForm<UpdateScriptDto> script={script} onSubmit={handleEdit} />
       </DialogContent>
     </Dialog>
   );
 }
+
+export const EditScriptModal = NiceModal.create(EditScriptModalInner);
