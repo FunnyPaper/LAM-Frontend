@@ -191,7 +191,8 @@ export const scriptStore = create<ScriptState>((set, store) => ({
       return { ...state, state: copy };
     });
   },
-  getJsonSchema: (version: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getJsonSchema: (_version: string) => {
     const listeners: ((data: z.core.JSONSchema.JSONSchema) => void)[] = [];
     const find = () => dummySchema as unknown as z.core.JSONSchema.JSONSchema;
 

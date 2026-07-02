@@ -7,7 +7,7 @@ import { type PaginationParams, ScriptRunsList } from '../../components/lists/sc
 import { type ScriptRunSearchParams, ScriptRunsSearchBar } from '../../components/searchbars/script-runs.searchbar';
 import type { ScriptRunDto } from '../../api/queries/script-run.provider.dto';
 import type { CreateScriptRunDto } from '../../api/commands/script-run/create.script-run.provider';
-import type { EnvDto } from '../../api/queries/env.provider';
+import type { EnvDto, GetEnsProviderParams } from '../../api/queries/env.provider';
 import type { ScriptDto } from '../../api/queries/script.provider';
 import type { Paginated } from '../../api/queries/paginated.provider';
 import type { DataSource } from '../../api/resources/datasource';
@@ -49,24 +49,31 @@ export function RunsPage() {
     invalidate: invalidateScriptRun,
   } = useDataSourceHook(scriptRunResource);
 
-  // Datasources for CreateScriptRunModal
-  const [envsPagination, setEnvsPagination] = useState<{ page: number; limit: number }>({ page: 0, limit: 10 });
-  const [scriptsPagination, setScriptsPagination] = useState<{ page: number; limit: number }>({ page: 0, limit: 10 });
-  const [scriptVersionsPagination, setScriptVersionsPagination] = useState<{
-    page?: number;
-    limit?: number;
-    filter?: Record<string, unknown>;
-    sort?: Record<string, unknown>;
-  }>({ page: 0, limit: 10 });
-
-  const getAllEnvsDataSource = useMemo<DataSource<Paginated<EnvDto>> | null>(
-    () => getAllEnvs(envsPagination),
-    [getAllEnvs, envsPagination]
+  // Factory functions for CreateScriptRunModal datasources
+  // These factories create fresh datasources with current pagination params inside the modal
+  const getEnvsDataSourceFactory = useMemo<
+    ((params?: GetEnsProviderParams) => DataSource<Paginated<EnvDto>>) | null
+  >(
+    () => (params) => getAllEnvs(params ?? {}),
+    [getAllEnvs]
   );
 
-  const getAllScriptsDataSource = useMemo<DataSource<Paginated<ScriptDto>> | null>(
-    () => getAllScripts(scriptsPagination),
-    [getAllScripts, scriptsPagination]
+  const getScriptsDataSourceFactory = useMemo<
+    ((params?: {
+      page?: number;
+      limit?: number;
+      filter?: {
+        name?: string;
+      };
+      sort?: {
+        field?: 'name' | 'createdAt' | 'updatedAt';
+        order?: 'asc' | 'desc';
+      };
+      include?: ('versions' | 'runs')[];
+    }) => DataSource<Paginated<ScriptDto>>) | null
+  >(
+    () => (params) => getAllScripts(params ?? {}),
+    [getAllScripts]
   );
 
   const getScriptVersionsDataSourceFactory = useMemo<
@@ -131,8 +138,8 @@ export function RunsPage() {
             onClick={() =>
               showModal(MODAL_IDS.CREATE_SCRIPT_RUN, {
                 onCreate: handleCreateScriptRun,
-                getAllEnvsDataSource: getAllEnvsDataSource,
-                getAllScriptsDataSource: getAllScriptsDataSource,
+                getEnvsDataSourceFactory: getEnvsDataSourceFactory,
+                getScriptsDataSourceFactory: getScriptsDataSourceFactory,
                 getScriptVersionsDataSourceFactory: getScriptVersionsDataSourceFactory,
               })
             }

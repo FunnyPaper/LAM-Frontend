@@ -1,18 +1,6 @@
-import { createContext, useContext, type RefObject, type ReactNode } from 'react';
-
-export type DrawerContainerContextType = {
-  containerRef: RefObject<HTMLElement | null>;
-};
-
-export const DrawerContainerContext = createContext<DrawerContainerContextType | null>(null);
-
-export function useDrawerContainerContext() {
-  const context = useContext(DrawerContainerContext);
-  if (!context) {
-    throw new Error('useDrawerContainerContext must be used within a DrawerContainerProvider');
-  }
-  return context;
-}
+import { type ReactNode, type RefObject } from 'react';
+import { DrawerContainerContext } from './use-drawer-container';
+export type { DrawerContainerContextType } from './use-drawer-container';
 
 export type DrawerContainerProviderProps = {
   children: ReactNode;

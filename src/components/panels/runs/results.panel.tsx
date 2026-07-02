@@ -4,7 +4,7 @@ import { downloadFile } from 'lam-frontend/utils/download-file';
 import { useCallback } from 'react';
 export type ResultsPanelProps = {
   runId: string;
-  resultData?: Record<string, unknown>;
+  resultData: Record<string, unknown> | null;
   labels: {
     result: string;
     description: string;

@@ -1,9 +1,18 @@
 import { Button } from '@mui/material';
-import { Handle, Position } from '@xyflow/react';
+import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { memo } from 'react';
 import { useNavigate } from 'react-router';
 
-function ButtonNode({ data: { label, path } }: any) {
+type ButtonNodeData = {
+  label: string;
+  path: string;
+}
+
+type ButtonNodeProps = NodeProps & {
+  data: ButtonNodeData;
+}
+
+function ButtonNode({ data: { label, path } }: ButtonNodeProps) {
   const navigate = useNavigate();
 
   return (

@@ -74,8 +74,10 @@ export function VersionDetailPanel({
             name: nameLabel ?? '',
             validation: validationLabels ?? {
               required: '',
-              minLength: (n) => '',
-              maxLength: (n) => '',
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              minLength: (_n) => '',
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              maxLength: (_n) => '',
             },
           }}
         />

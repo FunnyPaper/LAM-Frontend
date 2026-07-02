@@ -34,7 +34,6 @@ export function ScriptsPage() {
   } = useContext(ApiProvider)!;
   const navigate = useNavigate();
 
-  const [selectedScript, setSelectedScript] = useState<ScriptDto | null>(null);
   const [searchParams, setSearchParams] = useState<ScriptSearchParams & PaginationParams>(defaultSearchParams);
   const [debouncedName] = useDebounce(searchParams.filter?.name, 300);
 
@@ -49,7 +48,6 @@ export function ScriptsPage() {
   } = useDataSourceHook(getAddScriptsDataSource);
 
   const handleRemove = (script: ScriptDto) => {
-    setSelectedScript(script);
     showModal(MODAL_IDS.CONFIRM, {
       title: t('confirm.delete.title'),
       content: t('confirm.delete.content'),
@@ -58,7 +56,6 @@ export function ScriptsPage() {
       confirmButtonColor: 'error',
       onConfirm: async () => {
         await remove(script.id);
-        setSelectedScript(null);
         invalidateScript();
       },
     });

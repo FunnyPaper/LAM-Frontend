@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { Close } from '@mui/icons-material';
 import { useCallback, useMemo, useState } from 'react';
 import type { ScriptDto } from '../../api/queries/script.provider';
-import type { EnvDto } from '../../api/queries/env.provider';
+import type { EnvDto, GetEnsProviderParams } from '../../api/queries/env.provider';
 import type { Paginated } from '../../api/queries/paginated.provider';
 import type { DataSource } from '../../api/resources/datasource';
 import type { ScriptVersionDto, GetScriptVersionsProviderParams } from '../../api/queries/script-version.provider';
@@ -31,8 +31,19 @@ import NiceModal, { useModal } from '@ebay/nice-modal-react';
 
 export type CreateScriptRunModalProps = {
   onCreate: (data: { envId?: string; scriptVersionId: string }) => void;
-  getAllEnvsDataSource: DataSource<Paginated<EnvDto>> | null;
-  getAllScriptsDataSource: DataSource<Paginated<ScriptDto>> | null;
+  getEnvsDataSourceFactory: ((params?: GetEnsProviderParams) => DataSource<Paginated<EnvDto>>) | null;
+  getScriptsDataSourceFactory: ((params?: {
+    page?: number;
+    limit?: number;
+    filter?: {
+      name?: string;
+    };
+    sort?: {
+      field?: 'name' | 'createdAt' | 'updatedAt';
+      order?: 'asc' | 'desc';
+    };
+    include?: ('versions' | 'runs')[];
+  }) => DataSource<Paginated<ScriptDto>>) | null;
   getScriptVersionsDataSourceFactory: ((scriptId: string, params?: GetScriptVersionsProviderParams) => DataSource<Paginated<ScriptVersionDto>>) | null;
 };
 
@@ -53,8 +64,8 @@ const defaultScriptVersionSearchParams: ScriptVersionsPaginationParams = {
 
 function CreateScriptRunModalInner({
   onCreate,
-  getAllEnvsDataSource,
-  getAllScriptsDataSource,
+  getEnvsDataSourceFactory,
+  getScriptsDataSourceFactory,
   getScriptVersionsDataSourceFactory,
 }: CreateScriptRunModalProps) {
   const { t } = useTranslation('runs');
@@ -72,15 +83,21 @@ function CreateScriptRunModalInner({
   const [selectedEnv, setSelectedEnv] = useState<EnvDto | null>(null);
   const [selectedScriptVersion, setSelectedScriptVersion] = useState<ScriptVersionDto | null>(null);
 
-  const envsDatasource = useMemo(
-    () => getAllEnvsDataSource,
-    [getAllEnvsDataSource]
-  );
+  const envsDatasource = useMemo(() => {
+    if (!getEnvsDataSourceFactory) return null;
+    return getEnvsDataSourceFactory({
+      page: envsSearchParams.page,
+      limit: envsSearchParams.limit,
+    });
+  }, [getEnvsDataSourceFactory, envsSearchParams]);
 
-  const scriptsDatasource = useMemo(
-    () => getAllScriptsDataSource,
-    [getAllScriptsDataSource]
-  );
+  const scriptsDatasource = useMemo(() => {
+    if (!getScriptsDataSourceFactory) return null;
+    return getScriptsDataSourceFactory({
+      page: scriptsSearchParams.page,
+      limit: scriptsSearchParams.limit,
+    });
+  }, [getScriptsDataSourceFactory, scriptsSearchParams]);
 
   const scriptVersionsDatasource = useMemo(() => {
     if (!selectedScript || !getScriptVersionsDataSourceFactory) return null;

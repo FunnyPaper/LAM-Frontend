@@ -4,6 +4,7 @@ import { EnvForm } from '../forms/env.form';
 import type { EnvDto } from '../../api/queries/env.provider';
 import { useTranslation } from 'react-i18next';
 import type { CreateEnvDto } from 'lam-frontend/api/commands/env/create.env.provider';
+import { useEffect, useState } from 'react';
 
 export type EnvDrawerProps<T> = {
   open: boolean;
@@ -23,6 +24,12 @@ export function EnvDrawer<T extends CreateEnvDto | Partial<CreateEnvDto>>({
   containerRef,
 }: EnvDrawerProps<T>) {
   const { t } = useTranslation('envs');
+  const [container, setContainer] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setContainer(containerRef?.current ?? null);
+  }, [containerRef]);
 
   if (!env) return null;
 
@@ -32,7 +39,7 @@ export function EnvDrawer<T extends CreateEnvDto | Partial<CreateEnvDto>>({
       anchor="right"
       open={open}
       onClose={onClose}
-      container={containerRef?.current}
+      container={container}
       sx={{
         '&.MuiDrawer-modal': {
           position: 'initial'

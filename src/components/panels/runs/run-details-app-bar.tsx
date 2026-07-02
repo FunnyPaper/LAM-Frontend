@@ -8,7 +8,6 @@ export type RunDetailsAppBarProps = {
   currentStatus: ScriptRunStatus;
   isRunning: boolean;
   isFinished: boolean;
-  runId: string;
   onBackToList: () => void;
   onStop: () => void;
   onRemove: () => void;
@@ -18,7 +17,6 @@ export function RunDetailsAppBar({
   currentStatus,
   isRunning,
   isFinished,
-  runId,
   onBackToList,
   onStop,
   onRemove,

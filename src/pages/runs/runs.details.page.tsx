@@ -9,15 +9,13 @@ import {
   useTheme,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { ApiProvider } from '../../providers/api.provider';
 import { useParams, useNavigate } from 'react-router';
 import {
   ScriptRunStatuses,
-  type ScriptRunResultDto,
   type ScriptRunStatus,
 } from '../../api/queries/script-run.provider.dto';
-import type { ScriptRunEventDto } from '../../api/queries/script-run-event.provider.dto';
 import { EnvsSnapshotPanel } from 'lam-frontend/components/panels/runs/env-snapshot.panel';
 import { EventsPanel } from 'lam-frontend/components/panels/runs/events.panel';
 import { ResultsPanel } from 'lam-frontend/components/panels/runs/results.panel';
@@ -26,6 +24,7 @@ import { ScriptVersionSnapshotPanel } from 'lam-frontend/components/panels/runs/
 import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
 import { ScriptVersionStatuses, type ScriptVersionStatus } from 'lam-frontend/api/queries/script-version.provider';
 import { RunDetailsAppBar } from 'lam-frontend/components/panels/runs/run-details-app-bar';
+import { useRunState } from '../../stores/run-state.store';
 
 export function RunsDetailsPage() {
   const { t: tRuns } = useTranslation('runs');
@@ -36,9 +35,7 @@ export function RunsDetailsPage() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { scriptRun, scriptRunEvent } = useContext(ApiProvider)!;
 
-  const [scriptRunEvents, setScriptRunEvents] = useState<ScriptRunEventDto[]>([]);
-  const [resultData, setResultData] = useState<ScriptRunResultDto>();
-  const [currentStatus, setCurrentStatus] = useState<ScriptRunStatus>('Unknown');
+  const { currentStatus, scriptRunEvents, resultData, updateStatus, addEvent, updateResult } = useRunState();
 
   const isRunning = currentStatus === 'Running' || currentStatus === 'Queued' || currentStatus == 'Cancelling';
   const isFinished = currentStatus === 'Succeeded' || currentStatus === 'Failed' || currentStatus === 'Cancelled';
@@ -54,44 +51,45 @@ export function RunsDetailsPage() {
     invalidate: invalidateScriptRun,
   } = useDataSourceHook(scriptRunResource);
 
-  const { 
-    data: scriptRunEventData, 
-    invalidate: invalidateScriptRunEvent 
+  const {
+    data: scriptRunEventData,
+    invalidate: invalidateScriptRunEvent
   } = useDataSourceHook(scriptRunEventResource, { enabled: isRunning });
 
   useEffect(() => {
     if (scriptRunEventData) {
       if (scriptRunEventData.type == 'status') {
-        setCurrentStatus(scriptRunEventData.status);
+        updateStatus(scriptRunEventData.status);
       }
     } else if(scriptRunData) {
-      setCurrentStatus(scriptRunData?.status);
+      updateStatus(scriptRunData?.status ?? 'Unknown');
     }
-  }, [scriptRunData, scriptRunEventData]);
+  }, [scriptRunData, scriptRunEventData, updateStatus]);
 
   useEffect(() => {
     if (!scriptRunEventData) return;
-
-    setScriptRunEvents((prev) => [...prev, scriptRunEventData]);
-  }, [scriptRunEventData]);
+    addEvent(scriptRunEventData);
+  }, [scriptRunEventData, addEvent]);
 
   useEffect(() => {
     if (scriptRunEventData) {
       if (scriptRunEventData.type == 'resultUpdate') {
         if (scriptRunEventData.change.type == 'partial') {
-          setResultData((prev) => {
-            return { ...prev, data: [...prev!.data!, ...scriptRunEventData.change.data] };
-          });
-        } else if (scriptRunEventData.change.type == 'full') {
-          setResultData((prev) => {
-            return { ...prev, data: scriptRunEventData.change.data };
-          });
+          updateResult((prev) => ({
+            ...prev,
+            data: [...(prev?.data ?? []), ...scriptRunEventData.change.data],
+          }));
+        } else {
+          updateResult((prev) => ({
+            ...prev,
+            data: scriptRunEventData.change.data,
+          }));
         }
       }
     } else if (scriptRunData?.result) {
-      setResultData(scriptRunData.result);
+      updateResult(scriptRunData.result);
     }
-  }, [scriptRunData, scriptRunEventData]);
+  }, [scriptRunData, scriptRunEventData, updateResult]);
 
   const handleBackToList = useCallback(() => navigate('/runs', { replace: true }), [navigate]);
 
@@ -130,7 +128,6 @@ export function RunsDetailsPage() {
         currentStatus={currentStatus}
         isRunning={isRunning}
         isFinished={isFinished}
-        runId={id!}
         onBackToList={handleBackToList}
         onStop={handleStop}
         onRemove={handleRemove}

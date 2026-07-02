@@ -10,8 +10,8 @@ import { Add } from '@mui/icons-material';
 import type { CreateEnvDto } from 'lam-frontend/api/commands/env/create.env.provider';
 import { useDataSourceHook } from 'lam-frontend/hooks/use-datasource.hook';
 import { useDebounce } from 'use-debounce';
-import { useDrawerContainerContext } from '../../contexts/drawer-container.context';
 import { MODAL_IDS, showModal } from 'lam-frontend/components/modals/modal.definitions';
+import { useDrawerContainerContext } from 'lam-frontend/contexts/use-drawer-container';
 
 const defaultSearchParams: EnvSearchParams & PaginationParams = {
   page: 0,
