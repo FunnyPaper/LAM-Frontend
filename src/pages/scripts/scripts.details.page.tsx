@@ -79,7 +79,7 @@ export function ScriptsDetailsPage() {
           },
         });
 
-        // We want to work on newly created version. 
+        // We want to work on newly created version.
         // Otherwise each save operation will try to create a new version instead of updating the previous one.
         setSearchParams((prev) => (prev.set('version', newId), prev));
       } else {
@@ -96,7 +96,15 @@ export function ScriptsDetailsPage() {
         invalidateScriptVersion();
       }
     },
-    [createScriptVersion, id, invalidateScriptVersion, scriptData, scriptVersionData, updateScriptVersion, setSearchParams]
+    [
+      createScriptVersion,
+      id,
+      invalidateScriptVersion,
+      scriptData,
+      scriptVersionData,
+      updateScriptVersion,
+      setSearchParams,
+    ]
   );
 
   const handleSaveAsScript = useCallback(
@@ -112,15 +120,21 @@ export function ScriptsDetailsPage() {
     [handleSaveScript, id, invalidateScript, invalidateScriptVersion, scriptData, updateScript]
   );
 
-  const handlePublish = useCallback(async (script: ScriptDto, version: ScriptVersionDto, data: PublishScriptVersionDto) => {
-    await publishScriptVersion(script.id, version.id, data);
-    invalidateScriptVersion();
-  }, [invalidateScriptVersion, publishScriptVersion]);
+  const handlePublish = useCallback(
+    async (script: ScriptDto, version: ScriptVersionDto, data: PublishScriptVersionDto) => {
+      await publishScriptVersion(script.id, version.id, data);
+      invalidateScriptVersion();
+    },
+    [invalidateScriptVersion, publishScriptVersion]
+  );
 
-  const handleArchive = useCallback(async (script: ScriptDto, version: ScriptVersionDto) => {
-    await archiveScriptVersion(script.id, version.id);
-    invalidateScriptVersion();
-  }, [archiveScriptVersion, invalidateScriptVersion])
+  const handleArchive = useCallback(
+    async (script: ScriptDto, version: ScriptVersionDto) => {
+      await archiveScriptVersion(script.id, version.id);
+      invalidateScriptVersion();
+    },
+    [archiveScriptVersion, invalidateScriptVersion]
+  );
 
   const handleRemove = useCallback(() => {
     if (!scriptData) return;
@@ -139,7 +153,6 @@ export function ScriptsDetailsPage() {
 
   const handleBackToList = useCallback(() => navigate('/scripts'), [navigate]);
   const handleSwitchView = useCallback((newView: 'flow' | 'editor') => setViewMode(newView), []);
-
 
   if (isScriptLoading) {
     return <CircularProgress />;
@@ -200,9 +213,9 @@ export function ScriptsDetailsPage() {
         </Stack>
       </AppBar>
       <Box p={2} height="100%">
-        {(!scriptVersionData || !zodSchema) && <CircularProgress /> }
+        {(!scriptVersionData || !zodSchema) && <CircularProgress />}
         {scriptVersionData && viewMode === 'flow' && <ScriptFlow />}
-        {scriptVersionData && viewMode === 'editor' && zodSchema &&         
+        {scriptVersionData && viewMode === 'editor' && zodSchema && (
           <ScriptEditor
             script={scriptData}
             scriptVersion={scriptVersionData}
@@ -214,7 +227,7 @@ export function ScriptsDetailsPage() {
             onSaveAs={handleSaveAsScript}
             schema={zodSchema}
           />
-        }
+        )}
       </Box>
     </Stack>
   );

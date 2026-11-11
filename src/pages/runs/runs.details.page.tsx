@@ -1,21 +1,9 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  Stack,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+import { Box, Button, CircularProgress, Grid, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { ApiProvider } from '../../providers/api.provider';
 import { useParams, useNavigate } from 'react-router';
-import {
-  ScriptRunStatuses,
-  type ScriptRunStatus,
-} from '../../api/queries/script-run.provider.dto';
+import { ScriptRunStatuses, type ScriptRunStatus } from '../../api/queries/script-run.provider.dto';
 import { EnvsSnapshotPanel } from 'lam-frontend/components/panels/runs/env-snapshot.panel';
 import { EventsPanel } from 'lam-frontend/components/panels/runs/events.panel';
 import { ResultsPanel } from 'lam-frontend/components/panels/runs/results.panel';
@@ -51,17 +39,16 @@ export function RunsDetailsPage() {
     invalidate: invalidateScriptRun,
   } = useDataSourceHook(scriptRunResource);
 
-  const {
-    data: scriptRunEventData,
-    invalidate: invalidateScriptRunEvent
-  } = useDataSourceHook(scriptRunEventResource, { enabled: isRunning });
+  const { data: scriptRunEventData, invalidate: invalidateScriptRunEvent } = useDataSourceHook(scriptRunEventResource, {
+    enabled: isRunning,
+  });
 
   useEffect(() => {
     if (scriptRunEventData) {
       if (scriptRunEventData.type == 'status') {
         updateStatus(scriptRunEventData.status);
       }
-    } else if(scriptRunData) {
+    } else if (scriptRunData) {
       updateStatus(scriptRunData?.status ?? 'Unknown');
     }
   }, [scriptRunData, scriptRunEventData, updateStatus]);

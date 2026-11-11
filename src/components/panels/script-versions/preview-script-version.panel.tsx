@@ -17,7 +17,7 @@ export function PreviewScriptVersionPanel({ content }: PreviewScriptVersionPanel
         minHeight: 0,
         '&::-webkit-scrollbar': {
           width: '6px',
-          height: '6px'
+          height: '6px',
         },
         '&::-webkit-scrollbar-thumb': {
           backgroundColor: theme.palette.grey[400],

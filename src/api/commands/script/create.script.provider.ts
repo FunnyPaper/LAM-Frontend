@@ -1,6 +1,6 @@
 export type CreateScriptDto = {
-  name: string,
-  description?: string,
-}
+  name: string;
+  description?: string;
+};
 
-export type CreateScriptProvider = (data: CreateScriptDto) => Promise<void>
+export type CreateScriptProvider = (data: CreateScriptDto) => Promise<void>;

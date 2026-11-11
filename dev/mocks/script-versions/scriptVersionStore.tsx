@@ -152,7 +152,7 @@ export const scriptVersionStore = create<ScriptVersionState>((set, store) => ({
       return { ...state, state: copy };
     });
 
-    return { id: "1" };
+    return { id: '1' };
   },
   fork: async (scriptId, id) => {
     set((state) => {

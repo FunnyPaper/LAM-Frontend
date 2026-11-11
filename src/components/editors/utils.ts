@@ -35,7 +35,8 @@ export function patchMonacoSchema(rawSchema: any): any {
     for (let i = 1; i < flatBranches.length; i++) {
       const branchProps = flatBranches[i]?.properties || {};
       possibleDiscriminators = possibleDiscriminators.filter(
-        (key) => branchProps[key] !== undefined &&
+        (key) =>
+          branchProps[key] !== undefined &&
           branchProps[key].const !== undefined &&
           typeof branchProps[key].const === 'string'
       );

@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
-const hasVar = (val: unknown): val is string =>
-  typeof val === "string" && /\{\{.*?\}\}/.test(val);
+const hasVar = (val: unknown): val is string => typeof val === 'string' && /\{\{.*?\}\}/.test(val);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getValueAtPath(obj: any, path: PropertyKey[]) {

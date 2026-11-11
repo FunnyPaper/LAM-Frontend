@@ -15,5 +15,5 @@ export default {
   envs,
   scripts,
   runs,
-  settings
-}
+  settings,
+};

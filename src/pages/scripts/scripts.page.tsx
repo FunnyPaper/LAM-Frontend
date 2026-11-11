@@ -76,27 +76,25 @@ export function ScriptsPage() {
     }
   };
 
-  const handlePreviewScript = useCallback((data: ScriptDto) => {
-    showModal(MODAL_IDS.PREVIEW_SCRIPT, {
-      script: data,
-      onRemove: async (scriptVersion: ScriptVersionDto) => {
-        await removeVersion(data.id, scriptVersion.id);
-      },
-      onEdit: (scriptVersion: ScriptVersionDto) => {
-        navigate(`/scripts/${data.id}?version=${scriptVersion.id}`);
-      },
-      onFork: (scriptVersion: ScriptVersionDto) =>
-        fork(data.id, scriptVersion.id)
-      ,
-      onArchive: (scriptVersion: ScriptVersionDto) =>
-        archive(data.id, scriptVersion.id)
-      ,
-      onPublish: (scriptVersion: ScriptVersionDto, versionData: { name: string }) =>
-        publish(data.id, scriptVersion.id, versionData)
-      ,
-      getScriptVersionsDataSourceFactory: (scriptId, params) => getAllScriptVersions(scriptId, params ?? {}),
-    });
-  }, [navigate, removeVersion, fork, archive, publish, getAllScriptVersions]);
+  const handlePreviewScript = useCallback(
+    (data: ScriptDto) => {
+      showModal(MODAL_IDS.PREVIEW_SCRIPT, {
+        script: data,
+        onRemove: async (scriptVersion: ScriptVersionDto) => {
+          await removeVersion(data.id, scriptVersion.id);
+        },
+        onEdit: (scriptVersion: ScriptVersionDto) => {
+          navigate(`/scripts/${data.id}?version=${scriptVersion.id}`);
+        },
+        onFork: (scriptVersion: ScriptVersionDto) => fork(data.id, scriptVersion.id),
+        onArchive: (scriptVersion: ScriptVersionDto) => archive(data.id, scriptVersion.id),
+        onPublish: (scriptVersion: ScriptVersionDto, versionData: { name: string }) =>
+          publish(data.id, scriptVersion.id, versionData),
+        getScriptVersionsDataSourceFactory: (scriptId, params) => getAllScriptVersions(scriptId, params ?? {}),
+      });
+    },
+    [navigate, removeVersion, fork, archive, publish, getAllScriptVersions]
+  );
 
   return (
     <Stack height="100%" sx={{ overflowX: 'hidden' }}>
@@ -119,19 +117,16 @@ export function ScriptsPage() {
           >
             <Add />
           </Button>
-          <ScriptsSearchBar
-            searchParams={searchParams}
-            onSearchParamsChanged={handleSearchParamsChanged}
-          />
+          <ScriptsSearchBar searchParams={searchParams} onSearchParamsChanged={handleSearchParamsChanged} />
         </Stack>
       </AppBar>
       <ScriptsList
         onScriptEditClick={(data, lastVersion) => {
-            if(lastVersion) {
-                navigate(`/scripts/${data.id}?version=${lastVersion.id}`)
-            } else {
-                navigate(`/scripts/${data.id}`)
-            }
+          if (lastVersion) {
+            navigate(`/scripts/${data.id}?version=${lastVersion.id}`);
+          } else {
+            navigate(`/scripts/${data.id}`);
+          }
         }}
         onScriptPreviewClick={handlePreviewScript}
         onScriptDeleteClick={handleRemove}

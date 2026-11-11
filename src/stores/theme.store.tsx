@@ -20,7 +20,9 @@ export const useThemeStore = create(
 
 export function getProcessedThemeMode(mode: ThemeMode): Omit<ThemeMode, 'system'> {
   if (mode === 'system') {
-    return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
   }
   return mode;
 }

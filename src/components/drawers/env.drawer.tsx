@@ -42,7 +42,7 @@ export function EnvDrawer<T extends CreateEnvDto | Partial<CreateEnvDto>>({
       container={container}
       sx={{
         '&.MuiDrawer-modal': {
-          position: 'initial'
+          position: 'initial',
         },
         '& .MuiDrawer-paper': {
           position: 'absolute',

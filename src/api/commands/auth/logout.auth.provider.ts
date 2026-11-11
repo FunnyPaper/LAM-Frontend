@@ -1,1 +1,1 @@
-export type LogoutAuthProvider = () => Promise<void>
+export type LogoutAuthProvider = () => Promise<void>;

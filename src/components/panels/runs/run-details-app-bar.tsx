@@ -63,12 +63,7 @@ export function RunDetailsAppBar({
           </Button>
         )}
         {isFinished && (
-          <Button
-            variant="outlined"
-            color="error"
-            startIcon={<Delete />}
-            onClick={onRemove}
-          >
+          <Button variant="outlined" color="error" startIcon={<Delete />} onClick={onRemove}>
             {t('details.remove')}
           </Button>
         )}

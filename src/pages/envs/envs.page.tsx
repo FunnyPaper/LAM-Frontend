@@ -84,14 +84,18 @@ export function EnvsPage() {
             size="small"
             variant="contained"
             sx={{ minWidth: '40px', height: '40px', alignSelf: 'center' }}
-            onClick={() => showModal(MODAL_IDS.CREATE_ENV, { onCreate: async (data: CreateEnvDto) => { await create(data); invalidateEnv(); }})}
+            onClick={() =>
+              showModal(MODAL_IDS.CREATE_ENV, {
+                onCreate: async (data: CreateEnvDto) => {
+                  await create(data);
+                  invalidateEnv();
+                },
+              })
+            }
           >
             <Add />
           </Button>
-          <EnvsSearchBar
-            searchParams={searchParams}
-            onSearchParamsChanged={handleParamsChange}
-          />
+          <EnvsSearchBar searchParams={searchParams} onSearchParamsChanged={handleParamsChange} />
         </Stack>
       </AppBar>
       {selectedEnv && (

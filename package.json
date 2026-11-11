@@ -24,7 +24,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "format": "prettier . --write"
   },
   "dependencies": {
     "@fontsource/roboto": "5.2.x",

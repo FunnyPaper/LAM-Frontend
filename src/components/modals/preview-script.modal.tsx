@@ -19,7 +19,9 @@ export type PreviewScriptModalProps = {
   onPublish: (scriptVersion: ScriptVersionDto, data: { name: string }) => Promise<void>;
   onRemove: (scriptVersion: ScriptVersionDto) => Promise<void>;
   onFork: (scriptVersion: ScriptVersionDto) => Promise<void>;
-  getScriptVersionsDataSourceFactory: ((scriptId: string, params?: GetScriptVersionsProviderParams) => DataSource<Paginated<ScriptVersionDto>>) | null;
+  getScriptVersionsDataSourceFactory:
+    | ((scriptId: string, params?: GetScriptVersionsProviderParams) => DataSource<Paginated<ScriptVersionDto>>)
+    | null;
 };
 
 export type PaginationParams = {
@@ -60,29 +62,20 @@ function PreviewScriptModalInner({
 
   const { data: scriptVersions, invalidate: invalidateScriptVersion } = useDataSourceHook(scriptVersionsDatasource);
 
-  const handleChangePage = useCallback(
-    (_event: unknown, newPage: number) => {
-      setSearchParams((prev) => ({ ...prev, page: newPage }));
-    },
-    []
-  );
+  const handleChangePage = useCallback((_event: unknown, newPage: number) => {
+    setSearchParams((prev) => ({ ...prev, page: newPage }));
+  }, []);
 
-  const handleChangeRowsPerPage = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newRowsPerPage = parseInt(event.target.value, 10);
-      setSearchParams({ page: 0, limit: newRowsPerPage });
-    },
-    []
-  );
+  const handleChangeRowsPerPage = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setSearchParams({ page: 0, limit: newRowsPerPage });
+  }, []);
 
-  const handleSelectView = useCallback(
-    (_event: React.MouseEvent<HTMLElement>, value: ViewType | null) => {
-      if (value != null) {
-        setSelectedView(value);
-      }
-    },
-    []
-  );
+  const handleSelectView = useCallback((_event: React.MouseEvent<HTMLElement>, value: ViewType | null) => {
+    if (value != null) {
+      setSelectedView(value);
+    }
+  }, []);
 
   const handleBack = useCallback(() => {
     setSelectedVersion(null);

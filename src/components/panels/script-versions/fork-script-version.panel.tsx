@@ -15,7 +15,9 @@ export function ForkScriptVersionPanel({ header, info, scriptVersion, onFork, la
   return (
     <Stack direction="column" gap={2} sx={{ px: 2, py: 1 }}>
       <Stack direction="column" flex={1}>
-        <Typography variant="subtitle1" fontWeight={600}>{header}</Typography>
+        <Typography variant="subtitle1" fontWeight={600}>
+          {header}
+        </Typography>
         <Typography variant="body2" flex={1} textAlign="justify">
           {info}
         </Typography>

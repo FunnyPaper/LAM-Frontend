@@ -46,7 +46,10 @@ export function App(props: AppProps) {
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegisterPage />} />
             </Route>
-            <Route path="/" element={props.authState === 'loggedIn' ? <Navigate to="/profile" /> : <Navigate to="/login" />} />
+            <Route
+              path="/"
+              element={props.authState === 'loggedIn' ? <Navigate to="/profile" /> : <Navigate to="/login" />}
+            />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </BrowserRouter>

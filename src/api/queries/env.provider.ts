@@ -1,20 +1,20 @@
-import type { DataSource } from "../resources/datasource";
-import type { Paginated } from "./paginated.provider";
+import type { DataSource } from '../resources/datasource';
+import type { Paginated } from './paginated.provider';
 
 export type EnvDto = {
-  id: string,
-  name: string,
-  description?: string,
-  data?: Record<string, string | undefined>
+  id: string;
+  name: string;
+  description?: string;
+  data?: Record<string, string | undefined>;
   createdAt?: string;
   updatedAt?: string;
-}
+};
 
 export type EnvSnapshotDto = {
   name: string;
   description?: string;
   data?: Record<string, string | undefined>;
-}
+};
 
 export type GetEnsProviderParams = {
   page?: number;
@@ -26,7 +26,7 @@ export type GetEnsProviderParams = {
     field?: 'name' | 'createdAt' | 'updatedAt';
     order?: 'asc' | 'desc';
   };
-}
+};
 
-export type GetEnvsProvider = (params?: GetEnsProviderParams) => DataSource<Paginated<EnvDto>>
-export type GetEnvProvider = (id: string) => DataSource<EnvDto>
+export type GetEnvsProvider = (params?: GetEnsProviderParams) => DataSource<Paginated<EnvDto>>;
+export type GetEnvProvider = (id: string) => DataSource<EnvDto>;

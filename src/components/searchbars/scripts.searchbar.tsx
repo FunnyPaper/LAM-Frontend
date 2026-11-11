@@ -7,7 +7,7 @@ import {
   Stack,
   TextField,
   ToggleButton,
-  ToggleButtonGroup
+  ToggleButtonGroup,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 

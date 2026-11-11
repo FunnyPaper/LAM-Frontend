@@ -8,4 +8,4 @@ export function downloadFile(blobPart: BlobPart, name: string) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-};
+}

@@ -1,5 +1,5 @@
 export type ReexecuteScriptRunDto = {
-  envId?: string
-}
+  envId?: string;
+};
 
-export type ReexecuteScriptRunProvider = (id: string, data: ReexecuteScriptRunDto) => Promise<void>
+export type ReexecuteScriptRunProvider = (id: string, data: ReexecuteScriptRunDto) => Promise<void>;

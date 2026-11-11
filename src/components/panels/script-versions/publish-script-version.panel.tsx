@@ -90,7 +90,7 @@ export function PublishScriptVersionPanel({
         />
 
         <Button type="submit" variant="outlined">
-          <Typography variant='button'>{labels.confirm}</Typography>
+          <Typography variant="button">{labels.confirm}</Typography>
         </Button>
       </Stack>
     </Stack>

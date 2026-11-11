@@ -1,13 +1,5 @@
 import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup
-} from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ScriptRunStatuses } from 'lam-frontend/api/queries/script-run.provider.dto';
 
@@ -47,7 +39,7 @@ export function ScriptRunsSearchBar({ searchParams, onSearchParamsChanged }: Scr
           <MenuItem value="">
             <em>{t('form.fields.allStatuses')}</em>
           </MenuItem>
-          {ScriptRunStatuses.filter(status => status != 'Unknown').map((status) => (
+          {ScriptRunStatuses.filter((status) => status != 'Unknown').map((status) => (
             <MenuItem key={status} value={status}>
               {t(`status.${status.toLowerCase()}`)}
             </MenuItem>

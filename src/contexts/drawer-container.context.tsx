@@ -8,9 +8,5 @@ export type DrawerContainerProviderProps = {
 };
 
 export function DrawerContainerProvider({ children, containerRef }: DrawerContainerProviderProps) {
-  return (
-    <DrawerContainerContext.Provider value={{ containerRef }}>
-      {children}
-    </DrawerContainerContext.Provider>
-  );
+  return <DrawerContainerContext.Provider value={{ containerRef }}>{children}</DrawerContainerContext.Provider>;
 }

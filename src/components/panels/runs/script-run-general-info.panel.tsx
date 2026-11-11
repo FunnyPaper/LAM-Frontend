@@ -40,25 +40,19 @@ export function ScriptRunGeneralInfoPanel({ isMobile, scriptRunData, labels }: S
               <Typography variant="subtitle2" color="text.secondary">
                 {labels.createdAt}
               </Typography>
-              <Typography>
-                {scriptRunData.createdAt ? formatLongDate(scriptRunData.createdAt) : '-'}
-              </Typography>
+              <Typography>{scriptRunData.createdAt ? formatLongDate(scriptRunData.createdAt) : '-'}</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle2" color="text.secondary">
                 {labels.updatedAt}
               </Typography>
-              <Typography>
-                {scriptRunData.updatedAt ? formatLongDate(scriptRunData.updatedAt) : '-'}
-              </Typography>
+              <Typography>{scriptRunData.updatedAt ? formatLongDate(scriptRunData.updatedAt) : '-'}</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle2" color="text.secondary">
                 {labels.finishedAt}
               </Typography>
-              <Typography>
-                {scriptRunData.finishedAt ? formatLongDate(scriptRunData.finishedAt) : '-'}
-              </Typography>
+              <Typography>{scriptRunData.finishedAt ? formatLongDate(scriptRunData.finishedAt) : '-'}</Typography>
             </Box>
           </Stack>
         </Stack>

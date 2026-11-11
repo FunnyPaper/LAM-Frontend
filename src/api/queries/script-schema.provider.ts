@@ -1,6 +1,4 @@
-import type { DataSource } from "../resources/datasource";
+import type { DataSource } from '../resources/datasource';
 import { z } from 'zod';
 
-export type GetScriptSchemaProvider = (
-  version: string
-) => DataSource<z.core.JSONSchema.JSONSchema>;
+export type GetScriptSchemaProvider = (version: string) => DataSource<z.core.JSONSchema.JSONSchema>;

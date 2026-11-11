@@ -6,11 +6,11 @@ import { useNavigate } from 'react-router';
 type ButtonNodeData = {
   label: string;
   path: string;
-}
+};
 
 type ButtonNodeProps = NodeProps & {
   data: ButtonNodeData;
-}
+};
 
 function ButtonNode({ data: { label, path } }: ButtonNodeProps) {
   const navigate = useNavigate();

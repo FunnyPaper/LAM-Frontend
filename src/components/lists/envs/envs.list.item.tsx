@@ -51,20 +51,10 @@ export function EnvsListItem({ env, onEdit, onDelete }: EnvsListItemProps) {
               {env.name}
             </Typography>
             {env.createdAt && (
-              <Chip
-                icon={<AddCircle />}
-                label={formatShortDate(env.createdAt)}
-                size="small"
-                variant="outlined"
-              />
+              <Chip icon={<AddCircle />} label={formatShortDate(env.createdAt)} size="small" variant="outlined" />
             )}
             {env.updatedAt && (
-              <Chip
-                icon={<Edit />}
-                label={formatShortDate(env.updatedAt)}
-                size="small"
-                variant="outlined"
-              />
+              <Chip icon={<Edit />} label={formatShortDate(env.updatedAt)} size="small" variant="outlined" />
             )}
           </Stack>
         }

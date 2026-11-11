@@ -83,19 +83,19 @@ This package exports as both ESM and CJS:
 
 ## Dependencies
 
-| Dependency | Type | Version |
-|-----------|------|---------|
-| react / react-dom | peer | 19.2.x |
-| @mui/material | peer | 7.3.x |
-| @monaco-editor/react | runtime | 4.7.x |
-| @xyflow/react | runtime | 12.10.x |
-| zustand | runtime | 5.0.x |
-| react-hook-form | runtime | 7.71.x |
-| date-fns | runtime | 4.1.x |
-| use-debounce | runtime | 10.1.x |
-| sass | runtime | 1.97.x |
-| vite | dev | 7.2.x |
-| typescript | dev | 5.9.x |
+| Dependency           | Type    | Version |
+| -------------------- | ------- | ------- |
+| react / react-dom    | peer    | 19.2.x  |
+| @mui/material        | peer    | 7.3.x   |
+| @monaco-editor/react | runtime | 4.7.x   |
+| @xyflow/react        | runtime | 12.10.x |
+| zustand              | runtime | 5.0.x   |
+| react-hook-form      | runtime | 7.71.x  |
+| date-fns             | runtime | 4.1.x   |
+| use-debounce         | runtime | 10.1.x  |
+| sass                 | runtime | 1.97.x  |
+| vite                 | dev     | 7.2.x   |
+| typescript           | dev     | 5.9.x   |
 
 ## License
 

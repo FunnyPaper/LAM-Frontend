@@ -3,9 +3,9 @@ export type PaginatedMetadataDto = {
   limit: number;
   totalItems: number;
   totalPages: number;
-}
+};
 
 export type Paginated<T> = {
-  data: T[],
-  metadata: PaginatedMetadataDto
-}
+  data: T[];
+  metadata: PaginatedMetadataDto;
+};

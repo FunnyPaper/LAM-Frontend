@@ -133,36 +133,42 @@ export function DashboardLayout() {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
 
-  const navItems = useMemo(() => ([
-    {
-      text: t('profile:header'),
-      path: '/profile',
-      icon: <AccountIcon />,
-    },
-    {
-      text: t('envs:header'),
-      path: '/envs',
-      icon: <EnvsIcon />,
-    },
-    {
-      text: t('scripts:header'),
-      path: '/scripts',
-      icon: <ScriptsIcon />,
-    },
-    {
-      text: t('runs:header'),
-      path: '/runs',
-      icon: <RunsIcon />,
-    },
-  ]), [t]);
+  const navItems = useMemo(
+    () => [
+      {
+        text: t('profile:header'),
+        path: '/profile',
+        icon: <AccountIcon />,
+      },
+      {
+        text: t('envs:header'),
+        path: '/envs',
+        icon: <EnvsIcon />,
+      },
+      {
+        text: t('scripts:header'),
+        path: '/scripts',
+        icon: <ScriptsIcon />,
+      },
+      {
+        text: t('runs:header'),
+        path: '/runs',
+        icon: <RunsIcon />,
+      },
+    ],
+    [t]
+  );
 
-  const settingsItems = useMemo(() => ([
-    {
-      text: t('settings:header'),
-      path: '/settings',
-      icon: <SettingsIcon />,
-    },
-  ]), [t]);
+  const settingsItems = useMemo(
+    () => [
+      {
+        text: t('settings:header'),
+        path: '/settings',
+        icon: <SettingsIcon />,
+      },
+    ],
+    [t]
+  );
 
   return (
     <Box sx={{ display: 'flex', width: '100%', height: '100%' }}>
@@ -173,9 +179,10 @@ export function DashboardLayout() {
         sx={{
           position: 'relative',
           [`& .${drawerClasses.paper}`]: {
-            position: 'absolute'
-          }
-        }}>
+            position: 'absolute',
+          },
+        }}
+      >
         <Stack>
           <DrawerHeader open={open}>
             <IconButton onClick={() => setOpen((open) => !open)}>
@@ -183,9 +190,7 @@ export function DashboardLayout() {
             </IconButton>
           </DrawerHeader>
           <Divider />
-          <List disablePadding>
-            {navItems.map((element) => listItemProvider(open, element))}
-          </List>
+          <List disablePadding>{navItems.map((element) => listItemProvider(open, element))}</List>
         </Stack>
         <Stack>
           <Divider />

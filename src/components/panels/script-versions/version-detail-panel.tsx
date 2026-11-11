@@ -57,11 +57,7 @@ export function VersionDetailPanel({
 
   switch (selectedView) {
     case 'view':
-      return (
-        <PreviewScriptVersionPanel
-          content={JSON.stringify(selectedVersion.content.astJson, null, 2)}
-        />
-      );
+      return <PreviewScriptVersionPanel content={JSON.stringify(selectedVersion.content.astJson, null, 2)} />;
     case 'publish':
       return (
         <PublishScriptVersionPanel

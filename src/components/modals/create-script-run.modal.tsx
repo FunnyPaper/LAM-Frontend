@@ -32,19 +32,23 @@ import NiceModal, { useModal } from '@ebay/nice-modal-react';
 export type CreateScriptRunModalProps = {
   onCreate: (data: { envId?: string; scriptVersionId: string }) => void;
   getEnvsDataSourceFactory: ((params?: GetEnsProviderParams) => DataSource<Paginated<EnvDto>>) | null;
-  getScriptsDataSourceFactory: ((params?: {
-    page?: number;
-    limit?: number;
-    filter?: {
-      name?: string;
-    };
-    sort?: {
-      field?: 'name' | 'createdAt' | 'updatedAt';
-      order?: 'asc' | 'desc';
-    };
-    include?: ('versions' | 'runs')[];
-  }) => DataSource<Paginated<ScriptDto>>) | null;
-  getScriptVersionsDataSourceFactory: ((scriptId: string, params?: GetScriptVersionsProviderParams) => DataSource<Paginated<ScriptVersionDto>>) | null;
+  getScriptsDataSourceFactory:
+    | ((params?: {
+        page?: number;
+        limit?: number;
+        filter?: {
+          name?: string;
+        };
+        sort?: {
+          field?: 'name' | 'createdAt' | 'updatedAt';
+          order?: 'asc' | 'desc';
+        };
+        include?: ('versions' | 'runs')[];
+      }) => DataSource<Paginated<ScriptDto>>)
+    | null;
+  getScriptVersionsDataSourceFactory:
+    | ((scriptId: string, params?: GetScriptVersionsProviderParams) => DataSource<Paginated<ScriptVersionDto>>)
+    | null;
 };
 
 const defaultEnvsSearchParams: EnvsPaginationParams = {
@@ -111,8 +115,7 @@ function CreateScriptRunModalInner({
 
   const { data: envs, isLoading: isEnvsLoading } = useDataSourceHook(envsDatasource);
   const { data: scripts, isLoading: isScriptsLoading } = useDataSourceHook(scriptsDatasource);
-  const { data: scriptVersions, isLoading: isScriptVersionsLoading } =
-    useDataSourceHook(scriptVersionsDatasource);
+  const { data: scriptVersions, isLoading: isScriptVersionsLoading } = useDataSourceHook(scriptVersionsDatasource);
 
   const completed = useMemo(
     () => ({

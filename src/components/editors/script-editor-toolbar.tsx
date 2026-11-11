@@ -50,7 +50,7 @@ export function ScriptEditorToolbar({
     >
       <Stack direction="row" justifyContent="space-between" alignItems="center" width="100%">
         <Stack direction="row" flex={1} alignItems="center">
-          {(scriptVersion?.status !== 'Draft' && isEdited) && (
+          {scriptVersion?.status !== 'Draft' && isEdited && (
             <Tooltip title={t('editor.warning.nonDraftEdit')}>
               <Box sx={{ padding: '5px', display: 'inline-flex', color: 'warning.dark' }}>
                 <Warning />
@@ -83,12 +83,7 @@ export function ScriptEditorToolbar({
             <input type="file" hidden onChange={onUpload} accept=".json,application/json" />
             <FileUpload />
           </IconButton>
-          <IconButton
-            size="small"
-            onClick={onDownload}
-            title={t('editor.download')}
-            sx={{ borderRadius: 0 }}
-          >
+          <IconButton size="small" onClick={onDownload} title={t('editor.download')} sx={{ borderRadius: 0 }}>
             <Download />
           </IconButton>
           <IconButton
@@ -113,22 +108,12 @@ export function ScriptEditorToolbar({
             <SaveAs />
           </IconButton>
           {scriptVersion && scriptVersion.status !== 'Published' && (
-            <IconButton
-              sx={{ borderRadius: 0 }}
-              size="small"
-              title={t('editor.publish')}
-              onClick={onPublish}
-            >
+            <IconButton sx={{ borderRadius: 0 }} size="small" title={t('editor.publish')} onClick={onPublish}>
               <Publish />
             </IconButton>
           )}
           {scriptVersion && scriptVersion.status !== 'Archived' && (
-            <IconButton
-              sx={{ borderRadius: 0 }}
-              size="small"
-              title={t('editor.archive')}
-              onClick={onArchive}
-            >
+            <IconButton sx={{ borderRadius: 0 }} size="small" title={t('editor.archive')} onClick={onArchive}>
               <Archive />
             </IconButton>
           )}

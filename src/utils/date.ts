@@ -18,15 +18,18 @@ export const DATE_FORMAT_WITH_SECONDS = 'yyyy/MM/dd HH:mm:ss';
  * @param dateFormat - Optional custom format string (defaults to DATE_FORMAT)
  * @returns Formatted date string, or undefined if input is invalid
  */
-export const formatDateValue = (date: string | Date | undefined | null, dateFormat: string = DATE_FORMAT): string | undefined => {
-    if (!date) {
-        return undefined;
-    }
-    const dateObj = date instanceof Date ? date : new Date(date);
-    if (isNaN(dateObj.getTime())) {
-        return undefined;
-    }
-    return formatDate(dateObj, dateFormat);
+export const formatDateValue = (
+  date: string | Date | undefined | null,
+  dateFormat: string = DATE_FORMAT
+): string | undefined => {
+  if (!date) {
+    return undefined;
+  }
+  const dateObj = date instanceof Date ? date : new Date(date);
+  if (isNaN(dateObj.getTime())) {
+    return undefined;
+  }
+  return formatDate(dateObj, dateFormat);
 };
 
 /**
@@ -35,7 +38,7 @@ export const formatDateValue = (date: string | Date | undefined | null, dateForm
  * @returns Formatted date string, or undefined if input is invalid
  */
 export const formatShortDate = (date: string | Date | undefined | null): string | undefined => {
-    return formatDateValue(date, DATE_FORMAT);
+  return formatDateValue(date, DATE_FORMAT);
 };
 
 /**
@@ -44,5 +47,5 @@ export const formatShortDate = (date: string | Date | undefined | null): string 
  * @returns Formatted date string, or undefined if input is invalid
  */
 export const formatLongDate = (date: string | Date | undefined | null): string | undefined => {
-    return formatDateValue(date, DATE_FORMAT_WITH_SECONDS);
+  return formatDateValue(date, DATE_FORMAT_WITH_SECONDS);
 };

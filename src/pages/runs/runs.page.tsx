@@ -51,38 +51,31 @@ export function RunsPage() {
 
   // Factory functions for CreateScriptRunModal datasources
   // These factories create fresh datasources with current pagination params inside the modal
-  const getEnvsDataSourceFactory = useMemo<
-    ((params?: GetEnsProviderParams) => DataSource<Paginated<EnvDto>>) | null
-  >(
+  const getEnvsDataSourceFactory = useMemo<((params?: GetEnsProviderParams) => DataSource<Paginated<EnvDto>>) | null>(
     () => (params) => getAllEnvs(params ?? {}),
     [getAllEnvs]
   );
 
   const getScriptsDataSourceFactory = useMemo<
-    ((params?: {
-      page?: number;
-      limit?: number;
-      filter?: {
-        name?: string;
-      };
-      sort?: {
-        field?: 'name' | 'createdAt' | 'updatedAt';
-        order?: 'asc' | 'desc';
-      };
-      include?: ('versions' | 'runs')[];
-    }) => DataSource<Paginated<ScriptDto>>) | null
-  >(
-    () => (params) => getAllScripts(params ?? {}),
-    [getAllScripts]
-  );
+    | ((params?: {
+        page?: number;
+        limit?: number;
+        filter?: {
+          name?: string;
+        };
+        sort?: {
+          field?: 'name' | 'createdAt' | 'updatedAt';
+          order?: 'asc' | 'desc';
+        };
+        include?: ('versions' | 'runs')[];
+      }) => DataSource<Paginated<ScriptDto>>)
+    | null
+  >(() => (params) => getAllScripts(params ?? {}), [getAllScripts]);
 
   const getScriptVersionsDataSourceFactory = useMemo<
     ((scriptId: string, params?: GetScriptVersionsProviderParams) => DataSource<Paginated<ScriptVersionDto>>) | null
   >(
-    () =>
-      getAllScriptVersions
-        ? (scriptId, params) => getAllScriptVersions(scriptId, params ?? {})
-        : null,
+    () => (getAllScriptVersions ? (scriptId, params) => getAllScriptVersions(scriptId, params ?? {}) : null),
     [getAllScriptVersions]
   );
 
@@ -146,10 +139,7 @@ export function RunsPage() {
           >
             <Add />
           </Button>
-          <ScriptRunsSearchBar
-            searchParams={searchParams}
-            onSearchParamsChanged={handleSearchParamsChanged}
-          />
+          <ScriptRunsSearchBar searchParams={searchParams} onSearchParamsChanged={handleSearchParamsChanged} />
         </Stack>
       </AppBar>
       <ScriptRunsList

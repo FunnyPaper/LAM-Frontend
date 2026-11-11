@@ -17,7 +17,7 @@ export const MODAL_IDS = {
   PREVIEW_SCRIPT: 'preview-script',
 } as const;
 
-export type ModalId = typeof MODAL_IDS[keyof typeof MODAL_IDS];
+export type ModalId = (typeof MODAL_IDS)[keyof typeof MODAL_IDS];
 
 /**
  * Type mapping of modal IDs to their expected data types
@@ -47,4 +47,3 @@ export type { CreateScriptRunModalProps };
 export type { CreateScriptModalProps };
 export type { EditScriptModalProps };
 export type { PreviewScriptModalProps };
-

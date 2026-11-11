@@ -1,5 +1,5 @@
 function isObject(obj: unknown): obj is Record<string, unknown> {
-  return !!(obj && typeof obj === "object" && !Array.isArray(obj));
+  return !!(obj && typeof obj === 'object' && !Array.isArray(obj));
 }
 
 export function deepMerge(target: Record<string, unknown>, source: Record<string, unknown>) {

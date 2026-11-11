@@ -1,1 +1,1 @@
-export * from './update.user.provider'
+export * from './update.user.provider';
